@@ -10459,7 +10459,11 @@ font-family:inherit; padding:4px 2px; cursor:pointer; -webkit-tap-highlight-colo
 .gs-row:has(#dcf-prob-water-rs), .gs-row:has(#dcf-prob-garden-rs) { display: none !important; }
 /* ==== 二改新增：开屏「只确认一次」（首次确认后续航直接跳过；公告内容未改动） ==== */
 html[data-splash-skip] #splash { display: none !important; }
-/* ==== 二改新增：云同步面板样式 ==== */#cloudsync-panel { padding:2px 14px 14px; }
+/* ==== 二改：隐藏「此间」与「摸鱼系列」（要恢复：删掉本段规则 + 对应行内 display:none） ==== */
+.app[data-app="cjian"], [data-desk-widget="app-cjian"], [data-desk-widget="cjian"],
+.app[data-app="fish"], [data-desk-widget="fish"],
+.mini-card[data-card-bg="fish"], [data-desk-widget="weekend"],
+.fav-tab[data-htab="fish"] { display: none !important; }/* ==== 二改新增：云同步面板样式 ==== */#cloudsync-panel { padding:2px 14px 14px; }
 #cloudsync-panel .cs-note { font-size:12.5px; line-height:1.6; color:var(--muted,#8a8a8a); padding:6px 0 10px; }
 #cloudsync-panel .cs-line { display:flex; align-items:center; gap:10px; justify-content:space-between; padding:7px 0; font-size:13px; color:var(--soft-ink,#555); }
 #cloudsync-panel .cs-line > span { flex:0 0 auto; }
@@ -10472,6 +10476,74 @@ html[data-splash-skip] #splash { display: none !important; }
 #cloudsync-panel .cs-btn-primary { background:var(--btn-bg,#111); color:var(--btn-ink,#fff); border-color:var(--btn-bg,#111); }
 #cloudsync-panel .cs-btn[disabled] { opacity:.45; }
 #cloudsync-panel .cs-hint { font-size:11.5px; line-height:1.6; color:var(--hint-ink,#b5b5b5); padding-top:6px; }
+/* ==== 二改新增：「私语」商城页面样式 ==== */
+#page-siyu .sy-body { flex:1; overflow-y:auto; padding:12px 12px 40px; }
+#page-siyu .sy-wallet { padding:10px 12px; border-radius:12px; background:var(--static-bg,rgba(0,0,0,.04)); font-size:13px; color:var(--soft-ink,#555); margin-bottom:10px; }
+#page-siyu .sy-bar { display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:12.5px; color:var(--soft-ink,#555); margin-bottom:10px; }
+#page-siyu .sy-max input { width:44px; border:1px solid var(--input-border,#e0e0e0); background:var(--input-bg,#fff); border-radius:8px; padding:4px 6px; font-size:12.5px; text-align:center; color:var(--ink,#111); }
+#page-siyu .sy-add { margin-left:auto; border:1px solid rgba(128,128,128,.3); background:rgba(128,128,128,.1); color:var(--ink,#111); border-radius:10px; padding:7px 12px; font-size:12.5px; }
+#page-siyu .sy-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+#page-siyu .sy-card { border-radius:14px; background:var(--card-bg,#fff); border:1px solid var(--card-border,rgba(0,0,0,.08)); padding:10px; position:relative; display:flex; flex-direction:column; }
+#page-siyu .sy-thumb { height:96px; display:flex; align-items:center; justify-content:center; font-size:40px; border-radius:10px; background:var(--static-bg,rgba(0,0,0,.04)); overflow:hidden; }
+#page-siyu .sy-thumb img { width:100%; height:100%; object-fit:cover; }
+#page-siyu .sy-name { font-size:13.5px; font-weight:600; margin-top:8px; color:var(--ink,#111); }
+#page-siyu .sy-price { font-size:12.5px; color:#c0392b; margin-top:2px; }
+#page-siyu .sy-wish { font-size:11.5px; color:var(--muted,#8a8a8a); margin-top:4px; line-height:1.5; min-height:32px; }
+#page-siyu .sy-buy { margin-top:8px; border:none; border-radius:10px; padding:8px 6px; font-size:12.5px; background:var(--btn-bg,#111); color:var(--btn-ink,#fff); }
+#page-siyu .sy-edit { position:absolute; top:8px; right:10px; font-size:11px; color:var(--muted,#8a8a8a); }
+#page-siyu .sy-editor { margin-top:12px; border-radius:14px; background:var(--card-bg,#fff); border:1px solid var(--card-border,rgba(0,0,0,.08)); padding:12px; }
+#page-siyu .sy-ed-row { display:flex; align-items:center; gap:10px; padding:6px 0; font-size:12.5px; color:var(--soft-ink,#555); }
+#page-siyu .sy-ed-row span { flex:0 0 88px; }
+#page-siyu .sy-ed-row input { flex:1 1 auto; min-width:0; border:1px solid var(--input-border,#e0e0e0); background:var(--input-bg,#fff); border-radius:9px; padding:7px 9px; font-size:12.5px; color:var(--ink,#111); outline:none; }
+#page-siyu .sy-ed-btns { display:flex; gap:8px; flex-wrap:wrap; padding-top:10px; }
+#page-siyu .sy-btn { flex:1 1 auto; min-width:70px; border:1px solid rgba(128,128,128,.3); background:rgba(128,128,128,.1); color:var(--ink,#111); border-radius:10px; padding:9px 6px; font-size:12.5px; }
+#page-siyu .sy-btn.sy-primary { background:var(--btn-bg,#111); color:var(--btn-ink,#fff); border-color:var(--btn-bg,#111); }
+#page-siyu .sy-ed-hint, #page-siyu .sy-hint { font-size:11.5px; line-height:1.6; color:var(--hint-ink,#b5b5b5); padding-top:8px; }
+#page-siyu .sy-rec-title { font-size:12.5px; font-weight:600; color:var(--soft-ink,#555); padding:16px 0 6px; }
+#page-siyu .sy-records { border-radius:12px; background:var(--card-bg,#fff); border:1px solid var(--card-border,rgba(0,0,0,.08)); overflow:hidden; }
+#page-siyu .sy-rec-row { display:flex; align-items:center; gap:8px; padding:9px 10px; font-size:12.5px; border-bottom:1px solid var(--line,#e6e6e6); }
+#page-siyu .sy-rec-row:last-child { border-bottom:none; }
+#page-siyu .sy-rec-name { flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--ink,#111); }
+#page-siyu .sy-rec-side { flex:0 0 auto; color:var(--muted,#8a8a8a); font-size:11.5px; }
+#page-siyu .sy-rec-price { flex:0 0 auto; color:#c0392b; }
+#page-siyu .sy-rec-ret { flex:0 0 auto; border:1px solid rgba(128,128,128,.3); background:rgba(128,128,128,.1); color:var(--ink,#111); border-radius:8px; padding:5px 10px; font-size:11.5px; }
+#page-siyu .sy-rec-done { flex:0 0 auto; color:var(--muted,#8a8a8a); font-size:11.5px; }
+#page-siyu .sy-rec-empty { padding:12px; font-size:12px; color:var(--hint-ink,#b5b5b5); text-align:center; }
+/* ==== 二改新增：「一起看」页面样式 ==== */
+#page-watchroad .wr-body { flex:1; overflow-y:auto; padding:12px 12px 40px; }
+#page-watchroad .wr-tabs { display:flex; gap:8px; margin-bottom:10px; }
+#page-watchroad .wr-tab { flex:1 1 0; border:1px solid rgba(128,128,128,.28); background:rgba(128,128,128,.1); color:var(--ink,#111); border-radius:10px; padding:9px 6px; font-size:13px; }
+#page-watchroad .wr-tab.sel { background:var(--btn-bg,#111); color:var(--btn-ink,#fff); border-color:var(--btn-bg,#111); }
+#page-watchroad .wr-panel { margin-bottom:8px; }
+#page-watchroad .wr-stage { position:relative; border-radius:14px; overflow:hidden; background:#000; }
+#page-watchroad #wr-video { width:100%; max-height:46vh; display:block; background:#000; }
+#page-watchroad .wr-reader-wrap { position:relative; border-radius:14px; overflow:hidden; background:var(--card-bg,#fff); border:1px solid var(--card-border,rgba(0,0,0,.08)); }
+#page-watchroad .wr-reader { max-height:46vh; overflow-y:auto; padding:14px; line-height:1.9; color:var(--ink,#111); font-size:15px; }
+#page-watchroad .wr-reader p { margin:0 0 12px; }
+#page-watchroad .wr-read-hint { font-size:12.5px; color:var(--hint-ink,#b5b5b5); text-align:center; padding:18px 6px; }
+#page-watchroad .wr-dan-layer { position:absolute; left:0; right:0; top:0; bottom:0; pointer-events:none; overflow:hidden; }
+#page-watchroad .wr-dan { position:absolute; right:0; white-space:nowrap; font-size:13px; padding:3px 8px; border-radius:9px; animation:wr-fly 8.5s linear forwards; }
+#page-watchroad .wr-dan.ta { background:rgba(0,0,0,.55); color:#fff; }
+#page-watchroad .wr-dan.me { background:rgba(74,159,212,.85); color:#fff; }
+@keyframes wr-fly { from { transform:translateX(100%); } to { transform:translateX(calc(-100% - 100vw)); } }
+#page-watchroad .wr-bar { display:flex; gap:8px; flex-wrap:wrap; padding:10px 0; }
+#page-watchroad .wr-btn { flex:1 1 auto; min-width:84px; border:1px solid rgba(128,128,128,.3); background:rgba(128,128,128,.1); color:var(--ink,#111); border-radius:10px; padding:9px 8px; font-size:12.5px; }
+#page-watchroad .wr-btn.wr-primary { background:var(--btn-bg,#111); color:var(--btn-ink,#fff); border-color:var(--btn-bg,#111); }
+#page-watchroad .wr-set-group { border-radius:12px; background:var(--card-bg,#fff); border:1px solid var(--card-border,rgba(0,0,0,.08)); overflow:hidden; margin-bottom:8px; }
+#page-watchroad .wr-row { display:flex; align-items:center; gap:8px; padding:9px 12px; font-size:12.5px; color:var(--soft-ink,#555); }
+#page-watchroad .wr-row .toggle { margin:0 0 0 auto; }
+#page-watchroad .wr-num { width:56px; border:1px solid var(--input-border,#e0e0e0); background:var(--input-bg,#fff); border-radius:8px; padding:5px 7px; font-size:12.5px; text-align:center; color:var(--ink,#111); }
+#page-watchroad .wr-dan-send { display:flex; gap:8px; padding:4px 0 8px; }
+#page-watchroad .wr-dan-send input { flex:1 1 auto; min-width:0; border:1px solid var(--input-border,#e0e0e0); background:var(--input-bg,#fff); border-radius:10px; padding:9px 10px; font-size:13px; color:var(--ink,#111); outline:none; }
+#page-watchroad .wr-dan-send .wr-btn { flex:0 0 auto; min-width:64px; }
+#page-watchroad .wr-hint { font-size:11.5px; line-height:1.6; color:var(--hint-ink,#b5b5b5); padding:6px 0 4px; }
+#page-watchroad .wr-dan-hist { margin-top:12px; border-radius:12px; background:var(--card-bg,#fff); border:1px solid var(--card-border,rgba(0,0,0,.08)); overflow:hidden; }
+#page-watchroad .wr-hist-title { font-size:12px; font-weight:600; color:var(--soft-ink,#555); padding:10px 12px 6px; }
+#page-watchroad .wr-hist-empty { font-size:12px; color:var(--hint-ink,#b5b5b5); padding:0 12px 12px; }
+#page-watchroad .wr-hist-row { display:flex; gap:8px; padding:8px 12px; font-size:12.5px; border-top:1px solid var(--line,#e6e6e6); }
+#page-watchroad .wr-hist-who { flex:0 0 auto; color:var(--muted,#8a8a8a); font-size:11.5px; }
+#page-watchroad .wr-hist-who.me { color:#4a9fd4; }
+#page-watchroad .wr-hist-txt { flex:1 1 auto; min-width:0; color:var(--ink,#111); }
 </style>
 </head>
 <body>
@@ -12047,6 +12119,9 @@ html[data-splash-skip] #splash { display: none !important; }
         <button class="cc-tab" data-type="drift">漂流瓶</button>
         <button class="cc-tab" data-type="interact">互动回应</button>
         <button class="cc-tab" data-type="music">音乐</button>
+        <button class="cc-tab" data-type="siyu">私语</button>
+        <button class="cc-tab" data-type="watch">看电视</button>
+        <button class="cc-tab" data-type="read">读小说</button>
         <!-- #317 梦角自由造句：程序生成（梦角说话截字重造句自动入库），这里可查看/删除 -->
         <button class="cc-tab" data-type="mjfree">梦角自由造句</button>
       </div>
@@ -13992,6 +14067,9 @@ html[data-splash-skip] #splash { display: none !important; }
               <div class="gs-row"><span>漂流瓶字卡概率</span><div class="stepper" id="dcf-prob-drift-rs" data-dcfkey="drift" data-min="0" data-max="100" data-step="5"><button class="stp-min">−</button><input class="stp-val" id="dcf-prob-drift-rs-val" readonly><button class="stp-max">+</button></div></div>
               <div class="gs-row"><span>互动回应字卡概率</span><div class="stepper" id="dcf-prob-interact-rs" data-dcfkey="interact" data-min="0" data-max="100" data-step="5"><button class="stp-min">−</button><input class="stp-val" id="dcf-prob-interact-rs-val" readonly><button class="stp-max">+</button></div></div>
               <div class="gs-row"><span>音乐字卡概率</span><div class="stepper" id="dcf-prob-music-rs" data-dcfkey="music" data-min="0" data-max="100" data-step="5"><button class="stp-min">−</button><input class="stp-val" id="dcf-prob-music-rs-val" readonly><button class="stp-max">+</button></div></div>
+              <div class="gs-row"><span>私语字卡概率</span><div class="stepper" id="dcf-prob-siyu-rs" data-dcfkey="siyu" data-min="0" data-max="100" data-step="5"><button class="stp-min">−</button><input class="stp-val" id="dcf-prob-siyu-rs-val" readonly><button class="stp-max">+</button></div></div>
+              <div class="gs-row"><span>看电视字卡概率</span><div class="stepper" id="dcf-prob-watch-rs" data-dcfkey="watch" data-min="0" data-max="100" data-step="5"><button class="stp-min">−</button><input class="stp-val" id="dcf-prob-watch-rs-val" readonly><button class="stp-max">+</button></div></div>
+              <div class="gs-row"><span>读小说字卡概率</span><div class="stepper" id="dcf-prob-read-rs" data-dcfkey="read" data-min="0" data-max="100" data-step="5"><button class="stp-min">−</button><input class="stp-val" id="dcf-prob-read-rs-val" readonly><button class="stp-max">+</button></div></div>
               <div class="gs-row"><span>跨桌面查岗字卡概率</span><div class="stepper" id="dcf-prob-deskcheck-rs" data-dcfkey="deskcheck" data-min="0" data-max="100" data-step="5"><button class="stp-min">−</button><input class="stp-val" id="dcf-prob-deskcheck-rs-val" readonly><button class="stp-max">+</button></div></div>
               <div class="gs-row"><span>寻踪日常字卡概率</span><div class="stepper" id="dcf-prob-checkin-rs" data-dcfkey="checkin" data-min="0" data-max="100" data-step="5"><button class="stp-min">−</button><input class="stp-val" id="dcf-prob-checkin-rs-val" readonly><button class="stp-max">+</button></div></div>
               <div class="gs-row"><span>番茄钟字卡概率</span><div class="stepper" id="dcf-prob-pomo-rs" data-dcfkey="pomo" data-min="0" data-max="100" data-step="5"><button class="stp-min">−</button><input class="stp-val" id="dcf-prob-pomo-rs-val" readonly><button class="stp-max">+</button></div></div>
@@ -14260,12 +14338,13 @@ html[data-splash-skip] #splash { display: none !important; }
           </div>
           <div class="gs-sub" style="padding:0 14px 2px">其他桌面的联系人会按各自概率（默认 2%，可在此逐联系人调整）主动给你来电，冷却与查岗一致 30 分钟。全局开关在 设置 →「开启 联系人跨桌面打电话」（默认关闭，需先到那里手动打开，这里调了概率也不会来电）</div>
           <!-- v3.26.x：摸鱼值 / 工作值累计总开关——桌面摸鱼小组件数值增长闸门（personalize.js addFish/addWork 消费） -->
-          <div class="gs-title" style="margin-top:10px">摸鱼值 / 工作值</div>
-          <div class="set-group glass">
+          <!-- 二改：摸鱼系列已隐藏（保留 DOM，JS 绑定不受影响） -->
+          <div class="gs-title" style="margin-top:10px;display:none">摸鱼值 / 工作值</div>
+          <div class="set-group glass" style="display:none">
             <div class="gs-row"><span>摸鱼值累计</span><label class="toggle"><input type="checkbox" id="fish-en"><span class="tk"></span></label></div>
             <div class="gs-row"><span>工作值累计</span><label class="toggle"><input type="checkbox" id="work-en"><span class="tk"></span></label></div>
           </div>
-          <div class="gs-sub" style="padding:0 14px 14px">桌面摸鱼小组件两组数值的增长总开关（默认开）。关闭「摸鱼值累计」后：TA 的自动摸鱼、你点摸鱼按钮、番茄钟补偿摸鱼、抓包奖励都不再涨摸鱼值；关闭「工作值累计」后：自动打工、专注期间的工作值等不再涨。已有数值保留不清零，重新打开即恢复累计，各联系人独立保存</div>
+          <div class="gs-sub" style="padding:0 14px 14px;display:none">桌面摸鱼小组件两组数值的增长总开关（默认开）。关闭「摸鱼值累计」后：TA 的自动摸鱼、你点摸鱼按钮、番茄钟补偿摸鱼、抓包奖励都不再涨摸鱼值；关闭「工作值累计」后：自动打工、专注期间的工作值等不再涨。已有数值保留不清零，重新打开即恢复累计，各联系人独立保存</div>
         </div>
         <!-- v3.6.x：保存设置按钮——点击把当前所有概率/开关写入本地并提示 -->
         <button class="ta-add-btn gs-save-btn" id="reply-save-btn" style="width:100%;margin:6px 0 10px">
@@ -14578,6 +14657,9 @@ html[data-splash-skip] #splash { display: none !important; }
         <div class="gs-row"><span>漂流瓶字卡概率</span><div class="stepper" id="dcf-prob-drift" data-min="0" data-max="100" data-step="5"><button class="stp-min">−</button><input class="stp-val" id="dcf-prob-drift-val" readonly><button class="stp-max">+</button></div></div>
         <div class="gs-row"><span>互动回应字卡概率</span><div class="stepper" id="dcf-prob-interact" data-min="0" data-max="100" data-step="5"><button class="stp-min">−</button><input class="stp-val" id="dcf-prob-interact-val" readonly><button class="stp-max">+</button></div></div>
         <div class="gs-row"><span>音乐字卡概率</span><div class="stepper" id="dcf-prob-music" data-min="0" data-max="100" data-step="5"><button class="stp-min">−</button><input class="stp-val" id="dcf-prob-music-val" readonly><button class="stp-max">+</button></div></div>
+        <div class="gs-row"><span>私语字卡概率</span><div class="stepper" id="dcf-prob-siyu" data-min="0" data-max="100" data-step="5"><button class="stp-min">−</button><input class="stp-val" id="dcf-prob-siyu-val" readonly><button class="stp-max">+</button></div></div>
+        <div class="gs-row"><span>看电视字卡概率</span><div class="stepper" id="dcf-prob-watch" data-min="0" data-max="100" data-step="5"><button class="stp-min">−</button><input class="stp-val" id="dcf-prob-watch-val" readonly><button class="stp-max">+</button></div></div>
+        <div class="gs-row"><span>读小说字卡概率</span><div class="stepper" id="dcf-prob-read" data-min="0" data-max="100" data-step="5"><button class="stp-min">−</button><input class="stp-val" id="dcf-prob-read-val" readonly><button class="stp-max">+</button></div></div>
         <!-- v3.42.x #422：寻踪日常推送 / 番茄钟完成消息——只读式「发到聊天」概率门控，无独立字卡池，
              不参与上方案引卡管理；0%=不进聊天，100%=原行为。功能说明标签由 default-cards.js 注入。 -->
         <div class="gs-row"><span>寻踪日常发送到聊天</span><div class="stepper" id="dcf-prob-checkin" data-min="0" data-max="100" data-step="5"><button class="stp-min">−</button><input class="stp-val" id="dcf-prob-checkin-val" readonly><button class="stp-max">+</button></div></div>
@@ -14605,6 +14687,9 @@ html[data-splash-skip] #splash { display: none !important; }
         <button class="cc-tab" data-type="drift">漂流瓶</button>
         <button class="cc-tab" data-type="interact">互动回应</button>
         <button class="cc-tab" data-type="music">音乐</button>
+        <button class="cc-tab" data-type="siyu">私语</button>
+        <button class="cc-tab" data-type="watch">看电视</button>
+        <button class="cc-tab" data-type="read">读小说</button>
       </div>
       <div class="cc-groups-bar" id="fc-groups-bar"></div>
       <div class="card-search glass">
@@ -22773,6 +22858,8 @@ window.__mochiBootRetry = function () { try { location.reload(); } catch (e) {} 
 <script defer src="js/page-coach.js" onerror="window.__mochiExtFail=(window.__mochiExtFail||[]).concat('page-coach.js')"></script>
 <script defer src="js/card-audit.js" onerror="window.__mochiExtFail=(window.__mochiExtFail||[]).concat('card-audit.js')"></script>
 <script defer src="js/storage-guide.js" onerror="window.__mochiExtFail=(window.__mochiExtFail||[]).concat('storage-guide.js')"></script>
+<script defer src="js/watch-read.js" onerror="window.__mochiExtFail=(window.__mochiExtFail||[]).concat('watch-read.js')"></script>
+<script defer src="js/siyu-shop.js" onerror="window.__mochiExtFail=(window.__mochiExtFail||[]).concat('siyu-shop.js')"></script>
 <script defer src="js/mobile-adapt.js" onerror="window.__mochiExtFail=(window.__mochiExtFail||[]).concat('mobile-adapt.js')"></script>
 <!-- PERF-PLAN 阶段 1：上一行是 ext 外置脚本 defer 注入锚，构建时被整体替换为 35 个外置 js 标签；本行说明必须连同注释符号一起整体留在注释内，勿删。#797 教训：说明若写在注释结尾之外＝变正文裸文本（全页面右侧白色乱码条），其中的标签样本会被浏览器当真开标签，吞掉其后全部尾部 DOM -->
 
