@@ -188,7 +188,7 @@ return n;
 var CC_LABEL = {
 text: '文字', kaomoji: '颜文字', emoji: 'emoji', sticker: '表情包', image: '图片', poke: '拍一拍', voice: '语音',
 fish: '摸鱼', eat: '吃饭', period: '经期', water: '喝水', garden: '花园', sync: '同频', reach: '伸手',
-cjian: '此间', room: '房间', piggy: '存钱罐', drift: '漂流瓶', interact: '互动回应', music: '音乐', mjfree: '梦角自由造句'
+cjian: '此间', room: '房间', piggy: '存钱罐', drift: '漂流瓶', interact: '互动回应', music: '音乐', siyu: '私语', watch: '看电视', read: '读小说', mjfree: '梦角自由造句'
 };
 var CC_ORDER = Object.keys(CC_LABEL);
 var poolCache = {};
@@ -209,6 +209,8 @@ function offCountIn(rec) { var n = 0; Object.keys(rec).forEach(function (t) { if
 var DCF = [
 ['fish', '摸鱼', 35, true], ['eat', '吃饭', 35, true], ['period', '经期', 25, true], ['water', '喝水', 35, true],
 ['garden', '花园', 40, true], ['sync', '同频', 60, true], ['reach', '伸手', 55, true], ['cjian', '此间', 100, true],
+['siyu', '私语', 20, true],
+['watch', '看电视', 30, true], ['read', '读小说', 30, true],
 ['room', '房间', 100, true], ['piggy', '存钱罐', 100, true], ['drift', '漂流瓶', 100, true], ['interact', '互动回应', 100, true],
 ['music', '音乐', 100, true], ['deskcheck', '跨桌面查岗', 50, true],
 ['checkin', '寻踪日常', 100, false], ['pomo', '番茄钟', 100, false], ['care', 'TA的关心（经期）', 100, false],

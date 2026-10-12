@@ -135,7 +135,7 @@ ccTokenizeGiantMedia(ownPoolCache, 'own');
 return ownPoolCache;
 }
 const CC_TYPES = ['text', 'kaomoji', 'emoji', 'sticker', 'image', 'poke', 'voice'];
-const CC_FUNC_KEYS = ['fish', 'eat', 'period', 'water', 'garden', 'sync', 'reach', 'cjian', 'room', 'piggy', 'drift', 'interact', 'music',
+const CC_FUNC_KEYS = ['fish', 'eat', 'period', 'water', 'garden', 'sync', 'reach', 'cjian', 'room', 'piggy', 'drift', 'interact', 'music', 'siyu', 'watch', 'read',
 'mjfree']; // #317 梦角自由造句：程序生成的重造句卡（dream-free.js），管理页可查看/删除，不进聊天通用池
 const CC_ALL_TYPES = CC_TYPES.concat(CC_FUNC_KEYS);
 const CC_FUN_COUNT_KEYS = CC_FUNC_KEYS.filter(k => k !== 'mjfree');
@@ -2047,7 +2047,7 @@ const EXPORT_CATS = [
 ['sticker', '表情包'], ['image', '图片'], ['poke', '拍一拍'], ['voice', '语音'],
 ['fish', '摸鱼'], ['eat', '吃饭'], ['period', '经期'], ['water', '喝水'], ['garden', '花园'],
 ['sync', '同频'], ['reach', '伸手'], ['cjian', '此间'], ['room', '房间'], ['piggy', '存钱罐'],
-['drift', '漂流瓶'], ['interact', '互动回应'], ['music', '音乐'],
+['drift', '漂流瓶'], ['interact', '互动回应'], ['music', '音乐'], ['siyu', '私语'], ['watch', '看电视'], ['read', '读小说'],
 ['mjfree', '梦角自由造句']
 ];
 const ceMask = document.getElementById('cc-export-mask');
@@ -2162,7 +2162,7 @@ ccExportOffer(data,
 }
 const ccImportData = document.getElementById('cc-import-data');
 if (ccImportData) {
-const CAT_NAMES = { text: '主字卡', kaomoji: '颜文字', emoji: 'emoji', sticker: '表情包', image: '图片', poke: '拍一拍', voice: '语音', fish: '摸鱼', eat: '吃饭', period: '经期', water: '喝水', garden: '花园', sync: '同频', reach: '伸手', cjian: '此间', room: '房间', piggy: '存钱罐', drift: '漂流瓶', interact: '互动回应', music: '音乐', mjfree: '梦角自由造句' };
+const CAT_NAMES = { text: '主字卡', kaomoji: '颜文字', emoji: 'emoji', sticker: '表情包', image: '图片', poke: '拍一拍', voice: '语音', fish: '摸鱼', eat: '吃饭', period: '经期', water: '喝水', garden: '花园', sync: '同频', reach: '伸手', cjian: '此间', room: '房间', piggy: '存钱罐', drift: '漂流瓶', interact: '互动回应', music: '音乐', siyu: '私语', watch: '看电视', read: '读小说', mjfree: '梦角自由造句' };
 ccImportData.addEventListener('click', () => {
 if (window.openModal) {
 const curName = CAT_NAMES[cur] || '当前分类';
@@ -2602,7 +2602,7 @@ inc[t].forEach(n => { if (typeof n === 'string' && o[t].indexOf(n) < 0) o[t].pus
 });
 st.set(key, JSON.stringify(o));
 }
-const CC_FULL_FUN_TYPES = ['fish', 'eat', 'period', 'water', 'garden', 'sync', 'reach', 'cjian', 'room', 'piggy', 'drift', 'interact', 'music'];
+const CC_FULL_FUN_TYPES = ['fish', 'eat', 'period', 'water', 'garden', 'sync', 'reach', 'cjian', 'room', 'piggy', 'drift', 'interact', 'music', 'siyu', 'watch', 'read'];
 function ccFullPickCc(o, keepFun) {
 const out = {};
 CC_ALL_TYPES.forEach(t => {
