@@ -43,7 +43,7 @@ function danSave(a) { try { const s = store(); if (s) s.set(NS_DAN, JSON.stringi
 
 /* ---------- 页面 ---------- */
 const host = (document.getElementById('page-phone') || {}).parentNode || document.body;
-let videoEl = null, curTab = 'tv', watchTimer = null, readTimer = null;
+let videoEl = null, frameEl = null, curTab = 'tv', watchTimer = null, readTimer = null;
 
 function buildPage() {
 if (document.getElementById('page-watchroad')) return;
@@ -57,6 +57,7 @@ page.innerHTML =
 '<div class="wr-panel" id="wr-panel-tv">' +
 '<div class="wr-stage" id="wr-stage">' +
 '<video id="wr-video" playsinline controls></video>' +
+'<iframe id="wr-frame" hidden allowfullscreen frameborder="0" scrolling="no"></iframe>' +
 '<div class="wr-dan-layer" id="wr-dan-tv"></div>' +
 '</div>' +
 '<div class="wr-bar">' +
@@ -64,7 +65,7 @@ page.innerHTML =
 '<button class="wr-btn" id="wr-url-video">粘贴视频链接</button>' +
 '<button class="wr-btn wr-primary" id="wr-tv-say">让 TA 说一句</button>' +
 '</div>' +
-'<div class="wr-hint">本地视频只在本次播放，不会存进备份（视频太大，会把备份撑爆）；视频直链会记住。开关与判定间隔在 设置 → 回复设置 →「私语 / 一起看」里调。</div>' +
+'<div class="wr-hint">支持：① 手机里的视频文件（最稳，离线可用，不进备份）② B站链接（BV/av，用 B站 官方播放器）③ 视频直链（.mp4/.webm/.mov/.m3u8）。<b>抖音/快手/小红书的分享链接不能直接播</b>（它们禁止外部嵌入），请先下载到手机再「选择本地视频」。开关与判定间隔在 设置 → 回复设置 →「私语 / 一起看」里调。</div>' +
 '</div>' +
 
 '<div class="wr-panel" id="wr-panel-read" hidden>' +
@@ -95,6 +96,8 @@ curTab = b.getAttribute('data-wtab');
 Array.prototype.forEach.call(page.querySelectorAll('[data-wtab]'), function (x) { x.classList.toggle('sel', x === b); });
 document.getElementById('wr-panel-tv').hidden = (curTab !== 'tv');
 document.getElementById('wr-panel-read').hidden = (curTab !== 'read');
+if (curTab === 'tv') { try { if (videoEl && !videoEl.paused) startWatchTicker(); else if (frameEl && !frameEl.hidden) startWatchTicker(); } catch (e) {} }
+else { stopWatchTicker(); }
 });
 });
 document.getElementById('wr-pick-video').addEventListener('click', pickLocalVideo);
@@ -109,13 +112,49 @@ document.getElementById('wr-dan-send').addEventListener('click', sendMyDanmaku);
 document.getElementById('wr-dan-input').addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); sendMyDanmaku(); } });
 document.getElementById('wr-dan-clear').addEventListener('click', function () { danSave([]); renderHistory(); toast('弹幕已清空'); });
 videoEl = document.getElementById('wr-video');
+frameEl = document.getElementById('wr-frame');
 videoEl.addEventListener('play', function () { startWatchTicker(); });
 videoEl.addEventListener('pause', function () { stopWatchTicker(); });
 videoEl.addEventListener('ended', function () { stopWatchTicker(); });
+videoEl.addEventListener('error', function () {
+if (!videoEl.src || videoEl._suppressErr) return;
+try { videoEl.pause(); } catch (e) {}
+unsupportedHelp();
+});
 renderAll();
 }
 
 /* ---------- 电视 ---------- */
+// 链接识别：B站(BV/av) → 官方外链播放器；直链视频 → <video>；抖音/快手/小红书 → 明确提示
+function parseMedia(url) {
+const u = String(url || '').trim();
+if (!u) return { kind: 'none' };
+let m = u.match(/(BV[0-9A-Za-z]{10})/);
+if (m) return { kind: 'bili', bvid: m[1] };
+m = u.match(/\/video\/av(\d+)/i) || u.match(/\bav(\d{6,})\b/i);
+if (m) return { kind: 'bili', aid: m[1] };
+if (/b23\.tv\//i.test(u)) return { kind: 'short', url: u };
+if (/douyin\.com|iesdouyin\.com|kuaishou\.com|xiaohongshu\.com|xhslink\.com/i.test(u)) return { kind: 'blocked', url: u };
+if (/\.(mp4|m4v|webm|ogv|ogg|mov|m3u8|mpd)(\?|#|$)/i.test(u)) return { kind: 'file', url: u };
+if (/^https?:\/\//i.test(u)) return { kind: 'maybe', url: u };
+return { kind: 'none' };
+}
+function showStage(src, kind) {
+if (!videoEl) return;
+try { videoEl._suppressErr = true; videoEl.pause(); } catch (e) {}
+if (kind === 'bili') {
+try { videoEl.removeAttribute('src'); videoEl.load(); } catch (e) {}
+if (frameEl) { frameEl.hidden = false; frameEl.src = src; }
+videoEl.hidden = true;
+setTimeout(function () { videoEl._suppressErr = false; }, 800);
+startWatchTicker(); // iframe 页面没有 play 事件，靠定时器驱动 TA 的「看法」
+} else {
+if (frameEl) { frameEl.hidden = true; frameEl.removeAttribute('src'); }
+videoEl.hidden = false;
+setTimeout(function () { videoEl._suppressErr = false; }, 0);
+videoEl.src = src;
+}
+}
 function pickLocalVideo() {
 const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'video/*';
 inp.addEventListener('change', function () {
@@ -123,28 +162,54 @@ const f = inp.files && inp.files[0]; if (!f) return;
 try {
 if (videoEl._url) { try { URL.revokeObjectURL(videoEl._url); } catch (e) {} }
 videoEl._url = URL.createObjectURL(f);
-videoEl.src = videoEl._url;
+try { store().set('wr-video-url', ''); } catch (e) {}
+showStage(videoEl._url, 'file');
 toast('已载入：' + f.name + '（本次有效，不会存进备份）');
 } catch (e) { toast('载入失败'); }
 });
 inp.click();
 }
+function unsupportedHelp(kind) {
+if (!window.openModal) { toast('这个链接不能直接播：请用「选择本地视频」，或粘 B站 链接'); return; }
+const head = kind === 'short'
+? '这是 B站 的短链（b23.tv），这里没法自动展开。\n做法：用浏览器打开这个短链，等它跳转到 bilibili.com/video/BV… 之后，把那条完整网址复制过来。\n\n'
+: '抖音 / 快手 / 小红书 的分享链接是「网页」，不是视频文件——浏览器里没法直接播（它们禁止外部嵌入、还有防盗链），这不是本站坏了。\n\n';
+window.openModal('这个链接不能直接播放', '', null, {
+noInput: true, big: true, okText: '知道了',
+staticText: head +
+'可行做法：\n① 把视频下载到手机 → 回来点「选择本地视频」播放（最稳，离线也能看）\n② 粘贴 B站 完整链接（bilibili.com/video/BV… 或 av…，用 B站 官方外链播放器）\n\n可直接播的直链：.mp4 / .webm / .mov / .m3u8'
+});
+}
 function promptVideoUrl() {
 if (!window.openModal) return;
 const cur = (function () { try { return store().get('wr-video-url') || ''; } catch (e) { return ''; } })();
-window.openModal('粘贴视频直链', '', function (v) {
+window.openModal('粘贴视频链接', '', function (v) {
 const url = String(v || '').trim();
-if (!url) return;
+if (!url) { try { store().set('wr-video-url', ''); } catch (e) {} return; }
+const pm = parseMedia(url);
+if (pm.kind === 'bili') {
+const src = pm.bvid
+? 'https://player.bilibili.com/player.html?bvid=' + pm.bvid + '&autoplay=0&danmaku=0&high_quality=1'
+: 'https://player.bilibili.com/player.html?aid=' + pm.aid + '&autoplay=0&danmaku=0&high_quality=1';
+try { store().set('wr-video-url', src); } catch (e) {}
+showStage(src, 'bili');
+toast('已载入 B站 链接');
+return;
+}
+if (pm.kind === 'short') { unsupportedHelp('short'); return; }
+if (pm.kind === 'blocked') { unsupportedHelp('blocked'); return; }
 try { store().set('wr-video-url', url); } catch (e) {}
-try {
-if (videoEl._url) { try { URL.revokeObjectURL(videoEl._url); } catch (e) {} videoEl._url = null; }
-videoEl.src = url;
-toast('已载入链接');
-} catch (e) { toast('链接无法播放'); }
-}, { inputValue: cur, placeholder: 'https://....mp4' });
+showStage(url, 'file');
+toast('已载入链接（若放不出来，说明它不是直链视频）');
+}, { inputValue: cur, placeholder: 'B站链接（BV…/av…）或视频直链 .mp4' });
 }
 function restoreVideoUrl() {
-try { const u = store().get('wr-video-url'); if (u && videoEl && !videoEl.src) videoEl.src = u; } catch (e) {}
+try {
+const u = store().get('wr-video-url');
+if (!u || !videoEl) return;
+if (parseMedia(u).kind === 'bili') showStage(u, 'bili');
+else { videoEl.src = u; }
+} catch (e) {}
 }
 // TA 的看法：飘一条 + 记录
 function taComment(manual) {
@@ -249,7 +314,7 @@ const gap = Math.max(5, cfg().readGap) * 1000;
 readTimer = setInterval(function () { taDanmaku(); }, gap);
 }
 function stopReadTicker() { if (readTimer) { clearInterval(readTimer); readTimer = null; } }
-function stopAll() { stopWatchTicker(); stopReadTicker(); try { if (videoEl && !videoEl.paused) videoEl.pause(); } catch (e) {} }
+function stopAll() { stopWatchTicker(); stopReadTicker(); try { if (videoEl && !videoEl.paused) videoEl.pause(); } catch (e) {} try { if (frameEl) frameEl.removeAttribute('src'); } catch (e) {} }
 
 /* ---------- 弹幕渲染 ---------- */
 function flyDanmaku(layerId, who, name, text) {
@@ -340,6 +405,7 @@ buildPage(); buildIcon(); loadNovel(); bindSettings();
 window.addEventListener('pagehide', stopAll);
 }
 window.watchReadOpen = openTogether;
+window.watchReadParse = parseMedia;
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
 else init();
 })();
