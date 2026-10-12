@@ -64,11 +64,7 @@ page.innerHTML =
 '<button class="wr-btn" id="wr-url-video">粘贴视频链接</button>' +
 '<button class="wr-btn wr-primary" id="wr-tv-say">让 TA 说一句</button>' +
 '</div>' +
-'<div class="wr-set-group">' +
-'<div class="wr-row"><span>启用看电视看法</span><label class="toggle"><input type="checkbox" id="wr-watch-on"><span class="tk"></span></label></div>' +
-'<div class="wr-row"><span>每隔</span><input class="wr-num" id="wr-watch-gap" type="number" min="5" max="300" step="5"><span>秒判定一次</span></div>' +
-'</div>' +
-'<div class="wr-hint">本地视频只在本次播放，不会存进备份（视频太大，会把备份撑爆）；视频**直链**会记住。TA 的看法概率在 设置 → 回复设置 →「看电视字卡概率」里调，0% = 不主动说。</div>' +
+'<div class="wr-hint">本地视频只在本次播放，不会存进备份（视频太大，会把备份撑爆）；视频直链会记住。开关与判定间隔在 设置 → 回复设置 →「私语 / 一起看」里调。</div>' +
 '</div>' +
 
 '<div class="wr-panel" id="wr-panel-read" hidden>' +
@@ -84,12 +80,7 @@ page.innerHTML =
 '<button class="wr-btn" id="wr-clear-novel">清空小说</button>' +
 '</div>' +
 '<div class="wr-dan-send"><input id="wr-dan-input" type="text" maxlength="60" placeholder="发一条弹幕…"><button class="wr-btn wr-primary" id="wr-dan-send">发送</button><button class="wr-btn" id="wr-dan-clear">清空弹幕</button></div>' +
-'<div class="wr-set-group">' +
-'<div class="wr-row"><span>启用读小说弹幕</span><label class="toggle"><input type="checkbox" id="wr-read-on"><span class="tk"></span></label></div>' +
-'<div class="wr-row"><span>每隔</span><input class="wr-num" id="wr-read-gap" type="number" min="5" max="300" step="5"><span>秒判定一次</span></div>' +
-'<div class="wr-row"><span>TA 回复我的弹幕</span><input class="wr-num" id="wr-reply-pct" type="number" min="0" max="100" step="10"><span>%</span></div>' +
-'</div>' +
-'<div class="wr-hint">弹幕只在页内飘，不会发到聊天。TA 的弹幕文案在 字卡库 → 读小说 里改（分组「弹幕」= TA 自己发的，「回你」= 回复你的弹幕）。所有弹幕都留在下面记录里。</div>' +
+'<div class="wr-hint">弹幕只在页内飘，不会发到聊天。TA 的弹幕文案在 字卡库 → 系统预设字卡 →「其他互动功能字卡」→ 读小说 里改（分组「弹幕」= TA 自己发的，「回你」= 回复你的弹幕）。开关与间隔在 设置 → 回复设置 →「私语 / 一起看」里调。</div>' +
 '</div>' +
 
 '<div class="wr-dan-hist" id="wr-dan-hist"></div>' +
@@ -109,11 +100,6 @@ document.getElementById('wr-panel-read').hidden = (curTab !== 'read');
 document.getElementById('wr-pick-video').addEventListener('click', pickLocalVideo);
 document.getElementById('wr-url-video').addEventListener('click', promptVideoUrl);
 document.getElementById('wr-tv-say').addEventListener('click', function () { taComment(true); });
-document.getElementById('wr-watch-on').addEventListener('change', function (ev) { cfgSet({ watchOn: !!ev.target.checked }); });
-document.getElementById('wr-watch-gap').addEventListener('change', function (ev) { cfgSet({ watchGap: Math.max(5, Math.min(300, parseInt(ev.target.value, 10) || 20)) }); ev.target.value = cfg().watchGap; });
-document.getElementById('wr-read-on').addEventListener('change', function (ev) { cfgSet({ readOn: !!ev.target.checked }); });
-document.getElementById('wr-read-gap').addEventListener('change', function (ev) { cfgSet({ readGap: Math.max(5, Math.min(300, parseInt(ev.target.value, 10) || 30)) }); ev.target.value = cfg().readGap; });
-document.getElementById('wr-reply-pct').addEventListener('change', function (ev) { cfgSet({ replyPct: Math.max(0, Math.min(100, parseInt(ev.target.value, 10) || 0)) }); ev.target.value = cfg().replyPct; });
 document.getElementById('wr-pick-novel').addEventListener('click', pickNovelFile);
 document.getElementById('wr-paste-novel').addEventListener('click', pasteNovel);
 document.getElementById('wr-font-minus').addEventListener('click', function () { setFont(-1); });
@@ -331,19 +317,26 @@ try { if (window.applyDeskLayout) window.applyDeskLayout(); } catch (e) {}
 function openTogether() {
 const pg = document.getElementById('page-watchroad');
 if (!pg) return;
-const c = cfg();
-const on = document.getElementById('wr-watch-on'); if (on) on.checked = !!c.watchOn;
-const wg = document.getElementById('wr-watch-gap'); if (wg) wg.value = c.watchGap;
-const rn = document.getElementById('wr-read-on'); if (rn) rn.checked = !!c.readOn;
-const rg = document.getElementById('wr-read-gap'); if (rg) rg.value = c.readGap;
-const rp = document.getElementById('wr-reply-pct'); if (rp) rp.value = c.replyPct;
 restoreVideoUrl(); renderNovel(); renderHistory();
 openPage(pg);
 startReadTicker();
 }
+/* ---------- 二改：开关与间隔移到 设置 → 回复设置（页面里不再放） ---------- */
+function bindSettings() {
+const wo = document.getElementById('wr-set-watchOn');
+if (wo) { wo.checked = !!cfg().watchOn; wo.addEventListener('change', function (e) { cfgSet({ watchOn: !!e.target.checked }); }); }
+const wg = document.getElementById('wr-set-watchGap');
+if (wg) { wg.value = cfg().watchGap; wg.addEventListener('change', function () { cfgSet({ watchGap: Math.max(5, Math.min(300, parseInt(wg.value, 10) || 20)) }); wg.value = cfg().watchGap; }); }
+const ro = document.getElementById('wr-set-readOn');
+if (ro) { ro.checked = !!cfg().readOn; ro.addEventListener('change', function (e) { cfgSet({ readOn: !!e.target.checked }); }); }
+const rg = document.getElementById('wr-set-readGap');
+if (rg) { rg.value = cfg().readGap; rg.addEventListener('change', function () { cfgSet({ readGap: Math.max(5, Math.min(300, parseInt(rg.value, 10) || 30)) }); rg.value = cfg().readGap; }); }
+const rp = document.getElementById('wr-set-replyPct');
+if (rp) { rp.value = cfg().replyPct; rp.addEventListener('change', function () { cfgSet({ replyPct: Math.max(0, Math.min(100, parseInt(rp.value, 10) || 0)) }); rp.value = cfg().replyPct; }); }
+}
 function renderAll() { /* 预留 */ }
 function init() {
-buildPage(); buildIcon(); loadNovel();
+buildPage(); buildIcon(); loadNovel(); bindSettings();
 window.addEventListener('pagehide', stopAll);
 }
 window.watchReadOpen = openTogether;

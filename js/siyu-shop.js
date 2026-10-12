@@ -223,9 +223,6 @@ page.innerHTML =
 '<div class="sy-body">' +
 '<div class="sy-wallet" id="sy-wallet"></div>' +
 '<div class="sy-bar">' +
-'<label class="sy-on"><input type="checkbox" id="sy-on"> 启用私语</label>' +
-'<span class="sy-max">TA 每天最多送 <input id="sy-taMax" type="number" min="0" max="9" step="1"> 次</span>' +
-'<span class="sy-max">TA 退回概率 <input id="sy-taRet" type="number" min="0" max="100" step="5"> %</span>' +
 '<button class="sy-add" id="sy-add">＋ 添加商品</button>' +
 '</div>' +
 '<div class="sy-grid" id="sy-grid"></div>' +
@@ -243,9 +240,6 @@ page.innerHTML =
 '</div>';
 host.appendChild(page);
 document.getElementById('sy-back').addEventListener('click', function () { backHome(page); });
-document.getElementById('sy-on').addEventListener('change', function (ev) { cfgSet({ on: !!ev.target.checked }); toast(ev.target.checked ? '已开启「私语」' : '已关闭「私语」'); });
-document.getElementById('sy-taMax').addEventListener('change', function (ev) { cfgSet({ taMax: Math.max(0, Math.min(9, parseInt(ev.target.value, 10) || 0)) }); ev.target.value = cfg().taMax; });
-document.getElementById('sy-taRet').addEventListener('change', function (ev) { cfgSet({ taReturn: Math.max(0, Math.min(100, parseInt(ev.target.value, 10) || 0)) }); ev.target.value = cfg().taReturn; });
 document.getElementById('sy-add').addEventListener('click', function () { openEditor(null); });
 document.getElementById('sy-ed-cancel').addEventListener('click', closeEditor);
 document.getElementById('sy-ed-img').addEventListener('click', function () { if (editorId) pickImage(editorId); });
@@ -284,11 +278,16 @@ b.addEventListener('click', function (e) { e.stopPropagation(); openEditor(b.get
 });
 }
 function renderAll() {
-const c = cfg();
-const on = document.getElementById('sy-on'); if (on) on.checked = !!c.on;
-const mx = document.getElementById('sy-taMax'); if (mx) mx.value = c.taMax;
-const rt = document.getElementById('sy-taRet'); if (rt) rt.value = c.taReturn;
 renderWallet(); renderGrid(); renderRecords();
+}
+/* ---------- 二改：开关与频率移到 设置 → 回复设置（页面里不再放） ---------- */
+function bindSettings() {
+const on = document.getElementById('sy-set-on');
+if (on) { on.checked = !!cfg().on; on.addEventListener('change', function (ev) { cfgSet({ on: !!ev.target.checked }); toast(ev.target.checked ? '已开启「私语」' : '已关闭「私语」'); }); }
+const mx = document.getElementById('sy-set-taMax');
+if (mx) { mx.value = cfg().taMax; mx.addEventListener('change', function () { cfgSet({ taMax: Math.max(0, Math.min(9, parseInt(mx.value, 10) || 0)) }); mx.value = cfg().taMax; }); }
+const rt = document.getElementById('sy-set-taRet');
+if (rt) { rt.value = cfg().taReturn; rt.addEventListener('change', function () { cfgSet({ taReturn: Math.max(0, Math.min(100, parseInt(rt.value, 10) || 0)) }); rt.value = cfg().taReturn; }); }
 }
 function renderRecords() {
 const box = document.getElementById('sy-records');
@@ -406,7 +405,7 @@ try { if (window.applyDeskLayout) window.applyDeskLayout(); } catch (e) {}
 
 /* ---------- 初始化 ---------- */
 function init() {
-buildPage(); buildIcon();
+buildPage(); buildIcon(); bindSettings();
 setTimeout(function () { try { taBuyForMe(); } catch (e) {} }, 40000);
 setInterval(function () { try { taBuyForMe(); } catch (e) {} }, 8 * 60 * 1000);
 }

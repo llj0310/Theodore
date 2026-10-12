@@ -10509,6 +10509,8 @@ html[data-splash-skip] #splash { display: none !important; }
 #page-siyu .sy-rec-ret { flex:0 0 auto; border:1px solid rgba(128,128,128,.3); background:rgba(128,128,128,.1); color:var(--ink,#111); border-radius:8px; padding:5px 10px; font-size:11.5px; }
 #page-siyu .sy-rec-done { flex:0 0 auto; color:var(--muted,#8a8a8a); font-size:11.5px; }
 #page-siyu .sy-rec-empty { padding:12px; font-size:12px; color:var(--hint-ink,#b5b5b5); text-align:center; }
+/* 设置页里的小数字输入框（二改新增：私语 / 一起看） */
+.gs-num { width:66px; border:1px solid var(--input-border,#e0e0e0); background:var(--input-bg,#fff); border-radius:8px; padding:5px 8px; font-size:13px; text-align:center; color:var(--ink,#111); }
 /* ==== 二改新增：「一起看」页面样式 ==== */
 #page-watchroad .wr-body { flex:1; overflow-y:auto; padding:12px 12px 40px; }
 #page-watchroad .wr-tabs { display:flex; gap:8px; margin-bottom:10px; }
@@ -11475,7 +11477,7 @@ html[data-splash-skip] #splash { display: none !important; }
       </div>
       <div class="chat-item glass" id="li-fun-cards">
         <div class="av"><svg viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.4l6.1-.9z"/></svg></div>
-        <div class="ci"><div class="n">其他互动功能字卡</div><div class="m">各功能触发的系统预设字卡 · 如摸鱼/吃饭/经期等</div></div>
+        <div class="ci"><div class="n">其他互动功能字卡</div><div class="m">各功能触发的系统预设字卡 · 摸鱼/吃饭/喝水/花园/私语/看电视/读小说等</div></div>
         <div class="t" id="fc-lib-count">0</div>
       </div>
       <div class="chat-item glass" id="li-deskcheck">
@@ -14078,6 +14080,18 @@ html[data-splash-skip] #splash { display: none !important; }
               <div class="gs-row"><span>TA主动提问字卡概率</span><div class="stepper" id="dcf-prob-ask-rs" data-dcfkey="ask" data-min="0" data-max="100" data-step="5"><button class="stp-min">−</button><input class="stp-val" id="dcf-prob-ask-rs-val" readonly><button class="stp-max">+</button></div></div>
               <div class="gs-sub">与 字卡库→其他互动功能字卡 页（含寻踪页）是同一批键，两处实时同步；各项详细说明在那页的「功能说明」标签里。</div>
             </div>
+          </div>
+          <div class="gs-title">私语 / 一起看</div>
+          <div class="set-group glass">
+            <div class="gs-row"><span>启用「私语」商城</span><label class="toggle"><input type="checkbox" id="sy-set-on"><span class="tk"></span></label></div>
+            <div class="gs-row"><span>TA 每天最多送（次）</span><input class="gs-num" id="sy-set-taMax" type="number" min="0" max="9" step="1"></div>
+            <div class="gs-row"><span>TA 退回概率（%）</span><input class="gs-num" id="sy-set-taRet" type="number" min="0" max="100" step="5"></div>
+            <div class="gs-row"><span>启用「看电视」看法</span><label class="toggle"><input type="checkbox" id="wr-set-watchOn"><span class="tk"></span></label></div>
+            <div class="gs-row"><span>看电视判定间隔（秒）</span><input class="gs-num" id="wr-set-watchGap" type="number" min="5" max="300" step="5"></div>
+            <div class="gs-row"><span>启用「读小说」弹幕</span><label class="toggle"><input type="checkbox" id="wr-set-readOn"><span class="tk"></span></label></div>
+            <div class="gs-row"><span>读小说判定间隔（秒）</span><input class="gs-num" id="wr-set-readGap" type="number" min="5" max="300" step="5"></div>
+            <div class="gs-row"><span>TA 回复我的弹幕（%）</span><input class="gs-num" id="wr-set-replyPct" type="number" min="0" max="100" step="10"></div>
+            <div class="gs-sub">开关与频率都在这里调。「私语」商城的字卡、以及「一起看电视 / 一起读小说」的字卡，都放在 字卡库 → 系统预设字卡 →「其他互动功能字卡」里的 私语 / 看电视 / 读小说 三页（可逐张开关、可加自己的）；出现概率就是上方那三档「私语 / 看电视 / 读小说字卡概率」，两处实时同步。</div>
           </div>
           <div class="gs-title">每条消息使用多字卡回复</div>
           <div class="set-group glass">
