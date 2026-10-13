@@ -3,16 +3,6 @@
 const store = window.activeStore();
 const KEY = 'ta-invite';
 const DEFAULT_QUESTIONS = [
-{ id: 'iv_r1', cat: 'rps', kind: 'rps', text: '想和你猜拳，来一局？', enabled: true },
-{ id: 'iv_r2', cat: 'rps', kind: 'rps', text: '来猜拳呀，输的人答应一件事！', enabled: true },
-{ id: 'iv_r3', cat: 'rps', kind: 'rps', text: '手痒了，陪我猜拳好不好？', enabled: true },
-{ id: 'iv_r4', cat: 'rps', kind: 'rps', text: '三局两胜的猜拳，敢不敢？', enabled: true },
-{ id: 'iv_p1', cat: 'pong', kind: 'pong', text: '想和你玩一局 Pong，来吗？', enabled: true },
-{ id: 'iv_p2', cat: 'pong', kind: 'pong', text: '敢不敢来一局 Pong？我可是很强的', enabled: true },
-{ id: 'iv_p3', cat: 'pong', kind: 'pong', text: 'Pong 桌子摆好了，就等你了', enabled: true },
-{ id: 'iv_s1', cat: 'snake', kind: 'snake', text: '想和你玩双人贪吃蛇，来吗？', enabled: true },
-{ id: 'iv_s2', cat: 'snake', kind: 'snake', text: '来盘贪吃蛇？看谁吃得多！', enabled: true },
-{ id: 'iv_s3', cat: 'snake', kind: 'snake', text: '双人贪吃蛇开一局？这次我不撞你', enabled: true },
 { id: 'iv_c1', cat: 'cuddle', kind: 'cuddle', text: '想贴贴了，你可以过来一点吗？', enabled: true },
 { id: 'iv_c2', cat: 'cuddle', kind: 'cuddle', text: '抱一下再忙别的嘛，就一下下', enabled: true },
 { id: 'iv_c3', cat: 'cuddle', kind: 'cuddle', text: '手伸过来，我想牵一会儿', enabled: true },
@@ -24,7 +14,7 @@ const DEFAULT_QUESTIONS = [
 { id: 'iv_c9', cat: 'cuddle', kind: 'cuddle', text: '晚上早点休息，我来抱着你睡', enabled: true },
 { id: 'iv_c10', cat: 'cuddle', kind: 'cuddle', text: '心情很好，这种时候最适合亲亲了', enabled: true }
 ];
-const CATS_TI = [['rps', '猜拳邀请'], ['pong', 'Pong 邀请'], ['snake', '贪吃蛇邀请'], ['cuddle', '贴贴邀请']];
+const CATS_TI = [['cuddle', '贴贴邀请']];
 const KIND_OF = {};
 CATS_TI.forEach(([k]) => { KIND_OF[k] = k; });
 function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
@@ -113,14 +103,6 @@ return Math.random() * 100 < (window.icProb ? window.icProb(eff) : eff);
 window.taInviteDraw = function (c) {
 try {
 const d = tiLoad();
-if (gn(c, 'ai-rps-en', 1) === 1 && hit(gn(c, 'ai-rps-prob', 8))) {
-const q = drawFrom(enabledPool(d, ['rps']));
-if (q) return q;
-}
-if (gn(c, 'ai-game-en', 1) === 1 && hit(gn(c, 'ai-game-prob', 5))) {
-const q = drawFrom(enabledPool(d, ['pong', 'snake']));
-if (q) return q;
-}
 if (gn(c, 'ai-cuddle-en', 1) === 1 && hit(gn(c, 'ai-cuddle-prob', 5))) {
 const q = drawFrom(enabledPool(d, ['cuddle']));
 if (q) return q;
@@ -131,7 +113,7 @@ return null;
 window.taInvitePickAny = function () {
 try {
 const d = tiLoad();
-return drawFrom(enabledPool(d, ['rps', 'pong', 'snake', 'cuddle']));
+return drawFrom(enabledPool(d, ['cuddle']));
 } catch (e) { return null; }
 };
 window.taInvitePickKind = function (kind) {
@@ -213,13 +195,10 @@ return '<div class="ta-row">' +
 function tiAddFormHtml(blockKey, grp, kind) {
 return '<div class="ta-add">' +
 '<select class="ti-type tc-input" data-key="' + blockKey + '">' +
-'<option value="rps">猜拳邀请</option>' +
-'<option value="pong">Pong 邀请</option>' +
-'<option value="snake">贪吃蛇邀请</option>' +
 '<option value="cuddle">贴贴邀请</option>' +
 '</select>' +
 '<input id="ti-new-' + blockKey + '" type="text" placeholder="添加邀请话术…（发送时自动带昵称）">' +
-'<button class="ta-add-btn" data-key="' + blockKey + '" data-cat="' + (kind || 'rps') + '" data-grp="' + (grp || '') + '">添加</button>' +
+'<button class="ta-add-btn" data-key="' + blockKey + '" data-cat="' + (kind || 'cuddle') + '" data-grp="' + (grp || '') + '">添加</button>' +
 '</div>';
 }
 function renderTiMineInto(container, search) {
@@ -246,14 +225,14 @@ html += '<div class="cal-card glass mg-block">' +
 '<span class="mg-ops"><button class="mg-op" data-tig="' + esc(g.id) + '" data-op="rn" title="重命名">✎</button><button class="mg-op" data-tig="' + esc(g.id) + '" data-op="rm" title="删除分组">✕</button></span></div>';
 if (!arr.length) html += '<div class="ta-empty">这个分组还没有内容，可在下方直接添加</div>';
 arr.forEach(q => { html += tiItemHtml(q, d.questions.indexOf(q), tiBatchMode); });
-html += tiAddFormHtml('g' + g.id, g.id, 'rps');
+html += tiAddFormHtml('g' + g.id, g.id, 'cuddle');
 html += '</div>';
 });
 const ungrouped = mineQs.filter(q => !q.grp);
 html += '<div class="cal-card glass mg-block mg-ungrouped"><div class="cal-card-title mg-title"><span class="mg-name">未分组 · 按类型</span><span class="mg-cnt">(' + ungrouped.length + ')</span></div>';
 if (!ungrouped.length) html += '<div class="ta-empty">暂无未分组内容，可在上方批量导入或下方添加</div>';
 CATS_TI.forEach(([k, label]) => {
-const arr = ungrouped.filter(q => (q.kind || 'rps') === k && (search === '' || q.text.indexOf(search) >= 0));
+const arr = ungrouped.filter(q => (q.kind || 'cuddle') === k && (search === '' || q.text.indexOf(search) >= 0));
 if (!arr.length) return;
 html += '<div class="mg-subcat">' + esc(label) + ' <span style="font-size:11px;color:var(--muted);font-weight:400">(' + arr.length + ')</span></div>';
 arr.forEach(q => { html += tiItemHtml(q, d.questions.indexOf(q), tiBatchMode); });
@@ -333,7 +312,7 @@ const inp = document.getElementById('ti-new-' + key);
 const v = inp ? inp.value.trim() : '';
 if (!v) { toast('请输入邀请话术'); return; }
 const typeSel = btn.parentElement.querySelector('.ti-type');
-const kind = typeSel ? typeSel.value : 'rps';
+const kind = typeSel ? typeSel.value : 'cuddle';
 if (!KIND_OF[kind]) { toast('类型无效'); return; }
 const d2 = tiLoad();
 const q = { id: 'iv_' + Date.now() + '_' + Math.floor(Math.random() * 999), kind: kind, cat: kind, text: v, enabled: true, isPreset: false };
@@ -553,7 +532,7 @@ const batchTextEl = document.getElementById('ti-batch');
 const batchAddBtn = document.getElementById('ti-batch-add');
 if (batchTextEl && batchAddBtn) {
 batchAddBtn.addEventListener('click', () => {
-const kind = batchKindEl ? batchKindEl.value : 'rps';
+const kind = batchKindEl ? batchKindEl.value : 'cuddle';
 if (!KIND_OF[kind]) { toast('请选择要导入的类型'); return; }
 const lines = (batchTextEl.value || '').split(/\r?\n/).map(s => s.trim()).filter(Boolean);
 if (!lines.length) { toast('请先输入邀请话术，每行一条'); return; }

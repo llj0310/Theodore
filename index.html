@@ -4888,6 +4888,29 @@ pointer-events:none; transform:scale(1.02);
 height:2px; background:#4a8cff; border-radius:1px; margin:2px 0;
 box-shadow:0 0 6px rgba(74,140,255,.5);
 }
+.mg-toggle {
+min-width:46px; height:24px; border:none; cursor:pointer; border-radius:99px;
+font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center;
+background:#e9f2ff; color:#2b7fff; padding:0 10px; flex-shrink:0; font-family:inherit;
+}
+.mg-toggle.off { background:rgba(0,0,0,.07); color:var(--muted); }
+.mg-toggle:active { filter:brightness(.92); }
+.mg-prob { margin-top:12px; padding:12px; border:1px solid rgba(0,0,0,.08); border-radius:12px; background:rgba(0,0,0,.02); }
+.mg-prob-title { font-size:12px; font-weight:700; color:var(--muted); margin-bottom:10px; }
+.mg-prob-row { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; }
+.mg-prob-row:last-child { margin-bottom:0; }
+.mg-prob-label { font-size:13px; color:var(--ink); }
+.mg-prob-row .stepper { display:flex; align-items:center; gap:3px; }
+.mg-prob-row .stp-min, .mg-prob-row .stp-max {
+width:24px; height:24px; border:none; border-radius:8px; background:rgba(0,0,0,.06);
+color:var(--ink); font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; font-family:inherit;
+}
+.mg-prob-row .stp-min:active, .mg-prob-row .stp-max:active { background:rgba(0,0,0,.13); }
+.mg-prob-row .stp-val {
+width:42px; height:24px; border:1px solid rgba(0,0,0,.12); border-radius:8px;
+text-align:center; font-size:13px; color:var(--ink); background:#fff; font-family:inherit;
+}
+.mg-prob-tip { font-size:11px; line-height:1.6; color:var(--muted); margin-top:10px; }
 .cc-item.cc-dragging { opacity:.3; }
 .cc-drag-clone {
 box-shadow:0 10px 28px rgba(0,0,0,.22); opacity:.96;
@@ -11543,7 +11566,7 @@ html[data-splash-skip] #splash { display: none !important; }
       </div>
       <div class="chat-item glass" id="li-ta-invite">
         <div class="av"><svg viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="11" rx="5"/><path d="M7 10.5v3M5.5 12h3"/><path d="M15.5 11h.01M18.5 13h.01"/></svg></div>
-        <div class="ci"><div class="n">TA的邀请</div><div class="m">TA 主动约你玩 · 猜拳/Pong/贪吃蛇邀请话术</div><div class="note">开关/概率在 回复设置 → 其他</div></div>
+        <div class="ci"><div class="n">TA的邀请</div><div class="m">TA 主动发来的贴贴邀请话术</div><div class="note">开关/概率在 回复设置 → 其他</div></div>
         <div class="t" id="cc-ta-invite-count">10</div>
       </div>
       </div>
@@ -11870,7 +11893,7 @@ html[data-splash-skip] #splash { display: none !important; }
     </button>
     <div class="set-group glass">
       <div class="gs-row"><span>使用系统预设话术</span><label class="toggle"><input type="checkbox" id="ti-default" checked><span class="tk"></span></label></div>
-      <div class="gs-sub" style="padding:0 14px 14px">TA 主动邀请的开关/概率在「回复设置 → 其他」（猜拳 / 玩游戏 / 贴贴）按联系人独立设置；同意猜拳/Pong/贪吃蛇会打开对应半框，同意贴贴则 TA 会回应一句贴贴的话；拒绝都回一句婉拒。题库随当前桌面的联系人保存</div>
+      <div class="gs-sub" style="padding:0 14px 14px">TA 主动邀请的开关/概率在「回复设置 → 其他」（贴贴）按联系人独立设置；同意贴贴则 TA 会回应一句贴贴的话，拒绝则回一句婉拒。题库随当前桌面的联系人保存</div>
     </div>
     <div class="card-tabs" id="ti-tabs" style="padding:6px 12px 8px">
       <button class="cc-tab sel" data-tab="sys">系统预设</button>
@@ -11890,12 +11913,9 @@ html[data-splash-skip] #splash { display: none !important; }
         <div class="cal-card-title" style="padding:14px 14px 0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;vertical-align:-2px;margin-right:4px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg>批量导入邀请话术</div>
         <div class="tc-addform">
           <select id="ti-batch-kind" class="tc-input">
-            <option value="rps">导入到 · 猜拳邀请</option>
-            <option value="pong">导入到 · Pong 邀请</option>
-            <option value="snake">导入到 · 贪吃蛇邀请</option>
             <option value="cuddle">导入到 · 贴贴邀请</option>
           </select>
-          <textarea id="ti-batch" class="tc-input" rows="5" placeholder="每行一条邀请话术，如：&#10;来猜拳呀，输的人答应一件事！&#10;敢不敢来一局 Pong？"></textarea>
+          <textarea id="ti-batch" class="tc-input" rows="5" placeholder="每行一条邀请话术，如：&#10;想贴贴了，你可以过来一点吗？"></textarea>
           <button class="ta-add-btn" style="width:100%" id="ti-batch-add">批量导入</button>
         </div>
       </div>
@@ -12130,6 +12150,7 @@ html[data-splash-skip] #splash { display: none !important; }
       </div>
       <div class="cc-toolbar">
         <button class="cc-tool" id="cc-new-group"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8a4 4 0 100 8 4 4 0 000-8z"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.6-2-3.4-2.3 1a7 7 0 00-2-1.2L14.2 3h-4l-.4 2.6a7 7 0 00-2 1.2l-2.3-1-2 3.4 2 1.6A7 7 0 005 12c0 .4 0 .8.1 1.2l-2 1.6 2 3.4 2.3-1a7 7 0 002 1.2l.4 2.6h4l.4-2.6a7 7 0 002-1.2l2.3 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2z"/></svg>管理分组</button>
+        <button class="cc-tool" id="cc-type-prob"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>类型概率</button>
         <button class="cc-tool" id="cc-import"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>批量导入</button>
         <button class="cc-tool" id="cc-import-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>链接导入</button>
       </div>
@@ -12447,7 +12468,7 @@ html[data-splash-skip] #splash { display: none !important; }
           <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></div>
         </div>
         <!-- v3.27.x：各功能数据单独管理（feature-data.js）——桌面上每个功能（花园/房间/记账/
-             经期/占卜/音乐/小游戏…）各自分开导出/导入/清空，原来只有聊天/朋友圈/信箱三处有。
+             经期/占卜/音乐…）各自分开导出/导入/清空，原来只有聊天/朋友圈/信箱三处有。
              整机备份（含全部功能）仍是上面的导出数据/导入数据；这里只针对单个功能。 -->
         <div class="set-row" id="row-feature-data">
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5.5" rx="8" ry="3"/><path d="M4 5.5v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/><path d="M4 11.5v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/></svg></div>
@@ -12555,7 +12576,7 @@ html[data-splash-skip] #splash { display: none !important; }
         <!-- #913（2026-09-20 用户直派「手机发烫的问题要优化+提示怎么可以改善」）：工具段卡顿说明旁补「发烫」专条——
              发热与卡顿成因不同（发热多为后台持续干活：保活/边充边用/高负载，卡顿多为数据堆积+省电模式），
              单独成条不塞进卡顿清单；口径与 #436 后台减负、#906 报告点名保活一致 -->
-        <div class="gs-sub" id="heat-help-sub"><b>手机发烫怎么改善：</b>发烫多数不是网站坏了，是<b>有东西在后台一直干活</b>。按这个顺序查：① <b>「后台保活」</b>——开着＝页面在后台持续运行，是最常见的发热源；不用后台通知时到 设置 → 系统 关掉，温度会明显下降。② <b>边充电边用</b>——充电本身就发热，叠加使用更烫；烫得厉害先拔掉充电器对照。③ <b>通话 / 长时间放声音</b>——在本站打通话（响铃＋通话中持续放音）、长时间放歌或连着玩小游戏，跟真的打电话、视频通话一样，都会持续占用扬声器/听筒和网络＝发热明显，<b>属正常现象</b>，挂断/停播几分钟温度就降下来；系统级打电话、微信视频同理。④ <b>省电（低电量）模式别开</b>——又卡又发热（见上方卡顿说明第一条）。⑤ <b>别开一堆标签页、别用「桌面版网站」模式</b>。⑥ 数据堆得太多（图片最占）会让手机持续高负载，按上方卡顿清单「查看存储 → 对症清」。另外：不用本站时把它<b>从后台彻底划掉</b>（或关掉后台保活），几分钟温度就会降下来。<b>想量化取证</b>：上方「发烫自测」（10 秒~5 分钟，默认 3 分钟，测有没有被系统降频拖慢；跑满整档才看得出「越跑越慢」，可中途结束）与「电量消耗自测」（默认 1 小时档，分段测掉电速率，开了就能去忙别的，回来自动出报告）随时可跑，报告可复制/导出，发热或耗电异常时可把它复制／导出留档。</div>
+        <div class="gs-sub" id="heat-help-sub"><b>手机发烫怎么改善：</b>发烫多数不是网站坏了，是<b>有东西在后台一直干活</b>。按这个顺序查：① <b>「后台保活」</b>——开着＝页面在后台持续运行，是最常见的发热源；不用后台通知时到 设置 → 系统 关掉，温度会明显下降。② <b>边充电边用</b>——充电本身就发热，叠加使用更烫；烫得厉害先拔掉充电器对照。③ <b>通话 / 长时间放声音</b>——在本站打通话（响铃＋通话中持续放音）、长时间放歌，跟真的打电话、视频通话一样，都会持续占用扬声器/听筒和网络＝发热明显，<b>属正常现象</b>，挂断/停播几分钟温度就降下来；系统级打电话、微信视频同理。④ <b>省电（低电量）模式别开</b>——又卡又发热（见上方卡顿说明第一条）。⑤ <b>别开一堆标签页、别用「桌面版网站」模式</b>。⑥ 数据堆得太多（图片最占）会让手机持续高负载，按上方卡顿清单「查看存储 → 对症清」。另外：不用本站时把它<b>从后台彻底划掉</b>（或关掉后台保活），几分钟温度就会降下来。<b>想量化取证</b>：上方「发烫自测」（10 秒~5 分钟，默认 3 分钟，测有没有被系统降频拖慢；跑满整档才看得出「越跑越慢」，可中途结束）与「电量消耗自测」（默认 1 小时档，分段测掉电速率，开了就能去忙别的，回来自动出报告）随时可跑，报告可复制/导出，发热或耗电异常时可把它复制／导出留档。</div>
       </div>
       </div><!-- /them-sec diag -->
       <!-- 关于：按「应用信息 / 帮助与支持 / 隐私与法律 / 联系与反馈」四类整理（#606，2026-09-16）。
@@ -13179,10 +13200,10 @@ html[data-splash-skip] #splash { display: none !important; }
           <div class="lic-li">聊天里点击顶部栏联系人的头像可打开【寻踪 TA 的日常】页面</div>
           <div class="lic-li">聊天页面点击顶部栏联系人的昵称，可以让对方立即发送消息</div>
           <div class="lic-li">可搜索聊天记录并跳转到对应位置</div>
-          <div class="lic-li">聊天 + 按钮展开更多功能面板（互动 / 小游戏 / 工具 / TA的提问 四分类）：互动类——邀请TA、通话、拍一拍、红包、心意集市、心意柜、头像和昵称互动、漂流瓶</div>
+          <div class="lic-li">聊天 + 按钮展开更多功能面板（互动 / 工具 / TA的提问 三类）：互动类——邀请TA、通话、拍一拍、红包、心意集市、心意柜、头像和昵称互动、漂流瓶</div>
           <div class="lic-li">「邀请TA」半框内置【我的邀请】字卡库：预设 + 自定义分组，可存入 / 修改 / 删除邀请字卡，点字卡即可重复发送</div>
           <div class="lic-li">「邀请TA」半框顶部【📜 邀请记录】：查自己发出过的邀请与 TA 的回应（接受 / 拒绝 / 未回应）。<b>今天</b>的直接列出，更早的按日期折成一行、点日期展开，一次只露 5 天、点「加载更多」翻页；「清空记录」只清本桌面的邀请记录，问问TA 的记录不受影响</div>
-          <div class="lic-li">小游戏类——猜拳、Pong、贪吃蛇、打砖块、钓鱼、四子棋、扫雷、记忆翻牌、五子棋、连连看、消消乐、拍卖会；工具类——帮我决定、多人决定、问问TA、搜索记录、占卜、寻踪、此间、房间、心情日记</div>
+          <div class="lic-li">工具类——帮我决定、多人决定、问问TA、搜索记录、占卜、寻踪、此间、房间、心情日记</div>
           <div class="lic-li">朋友圈贴纸回复：配图动态下点「贴纸」，选表情包贴到照片上（张数不限制，自己贴的可点撤回），TA 会按评论概率回贴一张并进朋友圈通知</div>
           <div class="lic-li">回忆闪回：打开朋友圈时，「那年今天」的旧动态会以记忆卡置顶，点击定位到原动态并高亮，✕ 当天不再显示</div>
           <div class="lic-li">心情日记：桌面「日历」→ 顶部心情日记卡，每天选一个心情表情+一句话，TA 的心情按天生成；月视图两人心情曲线对照、心情日历格与连续记录统计（#303）</div>
@@ -13210,7 +13231,7 @@ html[data-splash-skip] #splash { display: none !important; }
           <div class="lic-li">内置词库规模：情绪 11 组 → 心意 9 组 + 特殊心意 4 组 → 交流意图 8 组三级链路，整类与单张均可开关</div>
           <div class="lic-li">经期中负面情绪组权重自动上调、正向组下调，TA 的回应更贴合状态</div>
           <div class="lic-li">游戏结果回应池：游戏胜利 / 失败 / 平局后 TA 抽对应字卡回应</div>
-          <div class="lic-li">新功能专属字卡：TA 的邀请（猜拳 / Pong / 贪吃蛇 / 贴贴）、经期关心、喝水、花园、房间、漂流瓶、位置卡等，逐条开关 + 自定义添加</div>
+          <div class="lic-li">新功能专属字卡：TA 的邀请（贴贴）、经期关心、喝水、花园、房间、漂流瓶、位置卡等，逐条开关 + 自定义添加</div>
           <div class="lic-li">字卡库页入口：公用字卡（全桌面联系人共享）、专属字卡（仅当前桌面联系人）、寻踪日常字卡、桌面今日情话、聊天默认字卡、聊天情绪字卡、聊天回应字卡及各功能专属字卡统一管理</div>
           <div class="lic-li">字卡管理：去重复、导出数据、一键清空所有分类</div>
           <div class="lic-li">触发概率可查看可调：系统预设字卡各页都能看到「当前触发概率」并当场调整（0~100%，0% 即该字卡不再出现）——聊天默认字卡（聊天 / 写信 / 朋友圈）、聊天情绪字卡（情绪 / 心意 / 交流意图）、聊天回应字卡（整条替换 / 连接词追加）、寻踪日常字卡（发送到聊天）以及其他互动功能字卡各分类</div>
@@ -13224,7 +13245,7 @@ html[data-splash-skip] #splash { display: none !important; }
           <div class="lic-li">联系人发送互动卡片：概率触发弹窗，或直接在聊天发送卡片</div>
           <div class="lic-li">互动卡频率可整体往下调档：原频率（默认）/ 稍安静 / 安静 / 很安静——覆盖聊天里 TA 主动发的提问卡五类、邀请三类与音乐邀请（没有比原频率更高的档），档位在 设置 → 回复设置 →「互动卡频率」</div>
           <div class="lic-li">我发送互动卡片与联系人互动（邀请 TA / 问问 TA 在聊天内发送卡片）</div>
-          <div class="lic-li">TA 的邀请三类开局：猜拳 / Pong / 贪吃蛇邀请，同意后直接进入对局</div>
+          <div class="lic-li">TA 的邀请：贴贴邀请，同意后 TA 回应一句贴贴的话</div>
           <div class="lic-li">可使用【帮我决定】提问联系人（功能参考：小红书@FelixFelicis 9416318007）</div>
           <div class="lic-li">可使用【多人决定】让多位成员各自给出决定（功能参考同上）</div>
           <div class="lic-li">联系人邀请一起播放音乐</div>
@@ -13234,7 +13255,7 @@ html[data-splash-skip] #splash { display: none !important; }
           <details class="lic-grp">
             <summary><span class="lg-num">04</span><span class="lg-name">心意币 · 红包 · 礼物</span><span class="lg-count">11</span></summary>
             <div class="lg-body">
-          <div class="lic-li">全局统一账本「心意币」：红包、礼物、小游戏、花园、钓鱼、漂流瓶共用一本账，新用户双方各 ¥520</div>
+          <div class="lic-li">全局统一账本「心意币」：红包、礼物、花园、漂流瓶共用一本账，新用户双方各 ¥520</div>
           <div class="lic-li">聊天红包：「我发 / TA 发」双向红包，预设情侣金额档（¥5.20 / 13.14 / 52 / 99.99 / 131.40 / 520）与七夕特别档，支持随机金额、自定义金额、留言与红包封面图</div>
           <div class="lic-li">发出的红包约 80% 概率被领取并致谢，24 小时未领取自动退回；长按可退回待领红包；被领取后 TA 还有概率再捎一句（我领 TA 的、TA 领我的都算；默认开启、默认 60%，开关 / 概率 / 「捎什么内容」三档都在聊天页红包的「设置」里，按每个联系人单独保存）</div>
           <div class="lic-li">TA 平时也会主动发红包（每天最多 5 次），七夕更爱发大额</div>
@@ -13244,33 +13265,12 @@ html[data-splash-skip] #splash { display: none !important; }
           <div class="lic-li"><b>心意市集·上传我的商品</b>：市集顶部的【＋ 上传我的商品】——用自己的照片当礼物（不传图就用 emoji），填上名字、价格、分类和一句默认留言就能存进市集，自己送、TA 送、加心愿单都跟默认商品一样能用。同一块里还有【导出商品数据】和【导入商品数据】：导出是一份 json 文件（你上传的图片一起打包），换手机、换浏览器或搬到另一个桌面，选这个文件导入即可还原；同一件商品（名字/分类/价格/图片都一样）会自动跳过，反复导入也不会翻倍。导出只装你自己上传的商品——默认商品、对默认商品的修改与删除、心意币、心愿单、心意柜记录都不包含、也不会被改动；导入时可选「合并」（已有的保留、缺的补上）或「先清空我的商品再导入」，文件里格式不对的条目会被忽略并在提示里说明跳过了几件</div>
           <div class="lic-li">送礼给 TA：挑商品写心意留言送出，礼物卡片飞进聊天并同步存进心意柜；TA 每天 5% 概率主动从市集挑礼物回礼（最多 3 次）；反过来我送出的每一份礼物（含心愿卡上点【送 TA】）都有概率换 TA 回一句——默认开启、默认 60%，「TA 回什么」可切系统预设话术 / 像正常聊天一样回复 / 混合，开关与概率都在「心意集市和心意柜设置」里</div>
           <div class="lic-li">心意柜：收到 / 送出礼物册，「TA 送我的 / 我送 TA 的」分类翻看与统计</div>
-          <div class="lic-li">小游戏与种花奖励对齐红包金额体系（¥5.2 / 13.14 / 52 / 1314…），各自每日封顶防刷</div>
+          <div class="lic-li">种花奖励对齐红包金额体系（¥5.2 / 13.14 / 52 / 1314…），各自每日封顶防刷</div>
             </div>
           </details>
 
           <details class="lic-grp">
-            <summary><span class="lg-num">05</span><span class="lg-name">小游戏</span><span class="lg-count">15</span></summary>
-            <div class="lg-body">
-          <div class="lic-li">入口：聊天更多功能 → 小游戏，共 13 项——游乐室 / 猜拳 / Pong / 贪吃蛇 / 打砖块 / 钓鱼 / 四子棋 / 扫雷 / 记忆翻牌 / 五子棋 / 连连看 / 消消乐 / 心意币拍卖会</div>
-          <div class="lic-li">游乐室：所有小游戏战绩聚合 + 徽章墙 + 限定摆件图鉴；每日随机一款「幸运游戏」奖励 ×2；五子棋/连连看/消消乐胜利有 8% 概率掉落限定摆件（互通收藏）</div>
-          <div class="lic-li">TA 会主动邀请玩 Pong / 贪吃蛇 / 猜拳 / 五子棋 / 连连看 / 消消乐 / 拍卖会，同意即直达；对局中 TA 会冒气泡说话（堵棋、连击、点错、抢拍品）</div>
-          <div class="lic-li">五子棋（11×11 迷你盘）：三档难度，TA 每回合状态随机（认真 / 正常 / 放水 / 失误）但保证会堵你的成五点；连胜负战绩与先手规则同四子棋</div>
-          <div class="lic-li">连连看（合作）：和 TA 轮流消除同款图案，连线不超过两个弯；TA 会快速找对、凭记忆翻牌，也会随缘点错；提示 ×3 / 洗牌 ×2，死锁自动洗牌</div>
-          <div class="lic-li">消消乐（合作）：轮流交换相邻两格凑三连，连锁连消共同冲目标分；默认简单模式无道具，头部可切「💣 道具」——四连直线出 ↔️/↕️（清整行/整列）、L/T 交叉出 💥 炸弹、五连出 🌈 彩虹；TA 走最优步也会放水、手滑，达成目标结算默契与心意币</div>
-          <div class="lic-li">心意币拍卖会：每场 3 件拍品与 TA 轮番举牌，落槌价从心意币真实扣款（拍不到不花钱），TA 心理价位是暗的；拍品收进 🎒 小收藏</div>
-          <div class="lic-li">对战三款：猜拳、Pong（四档难度）、四子棋（TA 每局状态随机：认真 / 放水 / 失误），累计战绩记录</div>
-          <div class="lic-li">双人贪吃蛇同场抢食：三档速度分段提速 + 穿墙 / 安全模式开关，手机端打开自动全屏放大地图</div>
-          <div class="lic-li">双人打砖块合作：各守半场共同清砖，球数可设 1~3，COMBO 连击与危险预警，结算按 ❤ 给出合作评级</div>
-          <div class="lic-li">合作扫雷：轮流挖完整张地图的安全格，共用 3 颗❤；TA 会推理插旗也会失误，格子藏心意币 / 礼物彩蛋</div>
-          <div class="lic-li">记忆翻牌和 TA 合作找配对：三档难度记「默契分」，完成 / 连击 / 首通均有心意币奖励</div>
-          <div class="lic-li">双人钓鱼：抛竿等咬钩，时机条蓝区收竿最佳；14 种收集物鱼图鉴，TA 会钓到纪念品送你并可兑换</div>
-          <div class="lic-li">钓鱼陪伴奖励：双方同时在钓鱼满 5 分钟，每天一次 ¥13.14 与一句留言</div>
-          <div class="lic-li">所有对局结果以系统消息写进聊天，TA 抽『游戏胜利 / 失败 / 平局·回应』字卡回应；赢局有心意币入账（各游戏每日封顶）</div>
-            </div>
-          </details>
-
-          <details class="lic-grp">
-            <summary><span class="lg-num">06</span><span class="lg-name">花园</span><span class="lg-count">9</span></summary>
+            <summary><span class="lg-num">05</span><span class="lg-name">花园</span><span class="lg-count">9</span></summary>
             <div class="lg-body">
           <div class="lic-li">桌面【花园】：初始 12 块地，升级只解锁「开垦资格」、工具条点「开垦」才真正扩地（最多 30 块，不开垦小花园照常玩、奖励照拿），24 种普通花 + 10 种稀有花，种子 → 发芽 → 开花</div>
           <div class="lic-li">天气季节氛围：晴天生长加速、当季花 1.3 倍速、雨天自动浇水</div>
@@ -13490,8 +13490,8 @@ html[data-splash-skip] #splash { display: none !important; }
           <div class="lic-li">桌面【主页】多 tab 统计：联系人换头像、通话记录、每日摸鱼值 / 每日打工值、摸鱼抓包（我抓到 TA / 被 TA 抓到 双向记录）、TA 的关心（查岗 / 经期 / 喝水 / 吃饭 / 番茄陪伴聚合）、心意币红包 / 赚钱 / 申请记录</div>
           <div class="lic-li">联系人今日情话、我的备忘、我的心情的历史可在【日历】里按天切换查看</div>
           <div class="lic-li">桌面【聊天统计】统计：相处记录（第一次聊天时间、最近聊天时间、聊天消息条数、文字数量、收藏记录）、聊天记录（消息比例、最常聊天时间段、最常聊天日期、平均每日消息、最长连续聊天、单日最高消息）、情绪表达（文字字卡 / 情绪 / 心意 / 交流意图使用次数排行）</div>
-          <div class="lic-li">聊天统计含多个流水区块：「我发红包」「TA 发红包」（双向摘要）、「TA 申请心意币记录」「小游戏记录」，全量保存按时间倒序</div>
-          <div class="lic-li">占卜记录、帮我决定 / 多人决定记录、听歌记录（TA 邀请 / 我的）、小游戏战绩与钓鱼图鉴单独留存</div>
+          <div class="lic-li">聊天统计含多个流水区块：「我发红包」「TA 发红包」（双向摘要）、「TA 申请心意币记录」，全量保存按时间倒序</div>
+          <div class="lic-li">占卜记录、帮我决定 / 多人决定记录、听歌记录（TA 邀请 / 我的）单独留存</div>
             </div>
           </details>
 
@@ -13710,7 +13710,7 @@ html[data-splash-skip] #splash { display: none !important; }
               <div class="lic-li">恢复 / 换机：新设备用 <b>设置 → 通用 → 导入数据</b> 选择之前导出的备份文件即可恢复（导入会覆盖当前数据）。</div>
               <div class="lic-li">顶部会有<b>备份提醒</b>（距上次成功导出超过 1 天提醒一次）；别只把备份留在下载列表里。</div>
               <div class="lic-li"><b>iPhone / iPad 必做</b>：把本站<b>「添加到主屏幕」</b>后从桌面图标长期使用——在 Safari 标签页里，Apple 会在<b>连续 7 天没打开本站</b>后自动清空它的全部本地数据（这是 Safari 的隐私策略，网站躲不过），这也是 iPhone 上「数据总是丢」最常见的原因。注意主屏幕应用与 Safari 是<b>两套独立存储</b>：切过去之前先在 设置 → 通用 →「导出数据」导一份，切过去后在桌面应用里走「导入数据」恢复；平时都从桌面图标打开，Safari 清不清都不影响你的数据。</div>
-              <div class="lic-li"><b>每个功能都能单独搬家</b>：<b>设置 → 工具 → 各功能数据管理</b> 里按功能列出<b>花园 / 房间 / 记账 / 经期 / 占卜 / 音乐 / 小游戏…</b>，每项都能单独<b>导出</b>成一个文件、单独<b>导入</b>回来（可选「合并」或「清空本功能后导入」）、单独<b>清空</b>——只动这一个功能的数据，别的功能和其他桌面都不受影响。</div>
+              <div class="lic-li"><b>每个功能都能单独搬家</b>：<b>设置 → 工具 → 各功能数据管理</b> 里按功能列出<b>花园 / 房间 / 记账 / 经期 / 占卜 / 音乐…</b>，每项都能单独<b>导出</b>成一个文件、单独<b>导入</b>回来（可选「合并」或「清空本功能后导入」）、单独<b>清空</b>——只动这一个功能的数据，别的功能和其他桌面都不受影响。</div>
               <div class="lic-li">聊天记录可在 <b>聊天设置 → 数据</b> 里单独导出 / 导入 / 删除；字卡可在字卡库用「自定义字卡·全量导出 / 导入」单独迁移。</div>
               <div class="lic-li">各联系人是独立命名空间，专属字卡属于当前桌面联系人，换设备后请在对应联系人桌面导入。</div>
             </div>
@@ -13728,9 +13728,9 @@ html[data-splash-skip] #splash { display: none !important; }
             <summary><span class="lg-num">6</span><span class="lg-name">功能都在哪里</span><span class="lg-count">7</span></summary>
             <div class="lg-body">
               <div class="lic-li">底部导航：<b>桌面 / 字卡库 / 设置</b> 三个主入口。</div>
-              <div class="lic-li">聊天：首页点联系人进入；右上角是<b>聊天设置</b>；输入框旁「+」展开更多功能面板，分 <b>互动 / 小游戏 / 工具 / TA的提问</b> 四类。</div>
+              <div class="lic-li">聊天：首页点联系人进入；右上角是<b>聊天设置</b>；输入框旁「+」展开更多功能面板，分 <b>互动 / 工具 / TA的提问</b> 三类。</div>
               <div class="lic-li"><b>互动</b>类：邀请 TA、通话、拍一拍、红包、心意集市、心意柜、头像和昵称互动、漂流瓶等。</div>
-              <div class="lic-li"><b>小游戏</b>类：猜拳、Pong、贪吃蛇、打砖块、钓鱼、四子棋、扫雷、记忆翻牌等；<b>工具</b>类：帮我决定、多人决定、问问 TA、搜索记录、占卜、寻踪、此间、房间、心情日记等。</div>
+              <div class="lic-li"><b>工具</b>类：帮我决定、多人决定、问问 TA、搜索记录、占卜、寻踪、此间、房间、心情日记等。</div>
                <div class="lic-li">桌面图标：日历、信箱、朋友圈、音乐、占卜、花园、房间、漂流瓶、记账、经期、备忘录、纪念等；左右滑动桌面临换页。</div>
                <div class="lic-li">注意：<b>开启群聊模式期间，桌面占卜图标会收起</b>（第一页留给「群聊」入口），占卜改从 <b>设置 → 工具 → 占卜</b> 打开，效果与点桌面图标一样（含历史记录）；关掉群聊模式图标自动回来。</div>
               <div class="lic-li">完整索引：<b>设置 → 聊天 → 功能大全</b>（可搜索、点条目直达）；群聊在 <b>设置 → 通用 → 开启群聊</b>。</div>
@@ -14048,8 +14048,6 @@ html[data-splash-skip] #splash { display: none !important; }
             <div class="gs-row"><span>TA的好奇</span><div class="stepper" id="dcp-tcu-prob" data-min="0" data-max="100" data-step="5"><button class="stp-min">−</button><input class="stp-val" id="dcp-tcu-prob-val" readonly><button class="stp-max">+</button></div></div>
             <div class="gs-row"><span>TA的吐槽</span><div class="stepper" id="dcp-tr-prob" data-min="0" data-max="100" data-step="5"><button class="stp-min">−</button><input class="stp-val" id="dcp-tr-prob-val" readonly><button class="stp-max">+</button></div></div>
             <div class="gs-row"><span>TA的查岗</span><div class="stepper" id="dcp-ckq-prob" data-min="0" data-max="100" data-step="5"><button class="stp-min">−</button><input class="stp-val" id="dcp-ckq-prob-val" readonly><button class="stp-max">+</button></div></div>
-            <div class="gs-row"><span>TA的邀请 · 猜拳</span><div class="stepper" id="dcp-ai-rps-prob" data-min="0" data-max="100" data-step="5"><button class="stp-min">−</button><input class="stp-val" id="dcp-ai-rps-prob-val" readonly><button class="stp-max">+</button></div></div>
-            <div class="gs-row"><span>TA的邀请 · 游戏</span><div class="stepper" id="dcp-ai-game-prob" data-min="0" data-max="100" data-step="5"><button class="stp-min">−</button><input class="stp-val" id="dcp-ai-game-prob-val" readonly><button class="stp-max">+</button></div></div>
             <div class="gs-row"><span>TA的邀请 · 贴贴</span><div class="stepper" id="dcp-ai-cuddle-prob" data-min="0" data-max="100" data-step="5"><button class="stp-min">−</button><input class="stp-val" id="dcp-ai-cuddle-prob-val" readonly><button class="stp-max">+</button></div></div>
             <div class="gs-sub">以上分类档行的键与各功能页/其他设置页是同一份（如「TA的查岗」= 回复设置→查岗 的「查岗概率」、情绪卡 = 字卡库→聊天情绪字卡 页那三行），改哪边都生效。TA的询问/小问题/好奇/吐槽四类是「在自身触发概率之上再乘总档」，各自的题库与弹窗等详细设置在 字卡库→系统预设字卡 对应页。</div>
             <div class="gs-row"><span>桌面今日情话 · 系统预设（开关型）</span><label class="toggle"><input type="checkbox" id="dcp-tg-quote"><span class="tk"></span></label></div>
@@ -14325,21 +14323,17 @@ html[data-splash-skip] #splash { display: none !important; }
           </div>
           <div class="gs-sub" style="padding:0 14px 14px">TA 主动找你时按概率来查你的岗：聊天里出现查岗问题卡（单选点击作答、文字题输入作答），作答后 TA 会回应；概率命中时直接弹出回答弹窗。冷却内不重复查岗，需开启「主动发送」，各联系人独立保存。查岗题库可在 字卡库 →「TA的查岗」里逐条开关或自定义添加。想立刻来一次（不看概率与冷却）：聊天 →「更多功能 → TA的提问 → 查岗」</div>
         </div>
-        <!-- v3.9.x：其他——联系人主动邀请（猜拳/玩游戏），随 TA 主动找你的消息按概率触发 -->
+        <!-- v3.9.x：其他——联系人主动邀请（贴贴），随 TA 主动找你的消息按概率触发 -->
         <div class="gs-panel" data-rpanel="other" hidden>
           <div class="gs-title">联系人主动邀请</div>
           <div class="set-group glass">
-            <div class="gs-row"><span>主动邀请猜拳</span><label class="toggle"><input type="checkbox" id="ai-rps-en"><span class="tk"></span></label></div>
-            <div class="gs-row"><span>猜拳邀请概率</span><div class="stepper" data-k="ai-rps-prob" data-min="0" data-max="100" data-step="5"><button class="stp-min">−</button><input class="stp-val" id="ai-rps-prob-val" readonly><button class="stp-max">+</button></div></div>
-            <div class="gs-row"><span>主动邀请玩游戏</span><label class="toggle"><input type="checkbox" id="ai-game-en"><span class="tk"></span></label></div>
-            <div class="gs-row"><span>游戏邀请概率</span><div class="stepper" data-k="ai-game-prob" data-min="0" data-max="100" data-step="5"><button class="stp-min">−</button><input class="stp-val" id="ai-game-prob-val" readonly><button class="stp-max">+</button></div></div>
             <div class="gs-row"><span>主动邀请贴贴</span><label class="toggle"><input type="checkbox" id="ai-cuddle-en"><span class="tk"></span></label></div>
             <div class="gs-row"><span>贴贴邀请概率</span><div class="stepper" data-k="ai-cuddle-prob" data-min="0" data-max="100" data-step="5"><button class="stp-min">−</button><input class="stp-val" id="ai-cuddle-prob-val" readonly><button class="stp-max">+</button></div></div>
             <!-- v3.15.x：TA 主动分享你自建的字卡——从字卡库（含公用）抽一张纯文本卡当 TA 的话发出来 -->
             <div class="gs-row"><span>主动分享你的字卡</span><label class="toggle"><input type="checkbox" id="ai-cc-en"><span class="tk"></span></label></div>
             <div class="gs-row"><span>分享字卡概率</span><div class="stepper" data-k="ai-cc-prob" data-min="0" data-max="100" data-step="1"><button class="stp-min">−</button><input class="stp-val" id="ai-cc-prob-val" readonly><button class="stp-max">+</button></div></div>
           </div>
-          <div class="gs-sub" style="padding:0 14px 14px">TA 主动找你的消息会按概率变成猜拳/游戏/贴贴邀请（游戏在 Pong、贪吃蛇中随机；贴贴同意后 TA 会回应一句），自动打开对应半框或回应，不想玩直接关掉即可；仅在你在聊天页时触发，需开启「主动发送」。邀请话术可在 字卡库 →「TA的邀请」里逐句开关或自定义添加；「分享你的字卡」从你在 字卡库 自建的纯文本卡（含公用）里随机抽一张当 TA 的悄悄话，冷却 90 分钟。想立刻要一次：聊天 →「更多功能 → TA的提问 → 邀请（猜拳等随机一种）/ 贴贴（一定是贴贴）」</div>
+          <div class="gs-sub" style="padding:0 14px 14px">TA 主动找你的消息会按概率变成贴贴邀请（同意后 TA 会回应一句）或分享你自建的字卡；仅在你在聊天页时触发，需开启「主动发送」。邀请话术可在 字卡库 →「TA的邀请」里逐句开关或自定义添加；「分享你的字卡」从你在 字卡库 自建的纯文本卡（含公用）里随机抽一张当 TA 的悄悄话，冷却 90 分钟。想立刻要一次：聊天 →「更多功能 → TA的提问 → 邀请（一定是贴贴）」</div>
           <!-- v3.20.x：联系人跨桌面查岗 / 跨桌面来电——其他桌面的联系人按各自概率/冷却主动来查岗、来电 -->
           <div class="gs-title" style="margin-top:6px">联系人跨桌面查岗</div>
           <div class="set-group glass">
@@ -15414,8 +15408,6 @@ html[data-splash-skip] #splash { display: none !important; }
           <svg viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
         </span>
         <span class="ch-name">主页</span>
-        <!-- v3.26.x：游乐室入口从 tab 记录区移到标题栏常驻按钮——原先作 data-hpanel="*" 卡置顶各 tab，占满记录区首屏影响查看其他 tag -->
-        <button class="arc-home-entry" id="home-arcade-entry" type="button">🎮 游乐室</button>
       </div>
       <div class="fav-tabs">
         <button class="fav-tab sel" data-htab="av">换头像记录</button>
@@ -15502,22 +15494,6 @@ html[data-splash-skip] #splash { display: none !important; }
         <div class="cal-card glass" data-hpanel="quotes" hidden>
           <div class="cal-card-title">情话存档</div>
           <div id="home-quotes"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 游乐室全屏页（主页页入口卡进入，返回回主页页；src/js/arcade.js） -->
-    <div class="page" id="page-arcade" hidden>
-      <div class="chat-head">
-        <span class="ch-back" id="arcade-back">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-        </span>
-        <span class="ch-name">游乐室 · 和 <b id="arcade-lg-partner">TA</b> 的战绩</span>
-      </div>
-      <div class="cal-scroll">
-        <div class="arc-wrap">
-          <div id="arcade-body"></div>
-          <div class="pong-foot">幸运游戏当日奖励 ×2 · 胜利有概率掉落限定摆件 · 战绩按联系人桌面分开记</div>
         </div>
       </div>
     </div>
@@ -16122,548 +16098,6 @@ html[data-splash-skip] #splash { display: none !important; }
             挂断通话
           </button>
 
-        </div>
-      </div>
-      <!-- 猜拳：聊天页底部半框（露出聊天消息，和联系人猜拳，联系人随机出拳） -->
-      <div class="poke-card" id="chat-rps-panel" hidden>
-        <div class="poke-card-head">
-          <span>猜拳 · <b id="rps-partner-name">TA</b></span>
-          <div class="snake-head-actions">
-            <button class="snake-icon-btn" id="rps-fs" title="全屏">⛶</button>
-            <button class="poke-card-close" id="chat-rps-close">✕</button>
-          </div>
-        </div>
-        <div class="poke-card-scroll">
-          <div class="rps-score" id="rps-score">胜 0 · 负 0 · 平 0</div>
-          <div class="rps-hint" id="rps-hint">选择你要出的拳</div>
-          <div class="rps-choices">
-            <button class="rps-choice" data-rps="rock" type="button">
-              <span class="rps-c-ico"><svg viewBox="0 0 256 256"><path fill="currentColor" d="M200 80h-16V64a32 32 0 0 0-56-21.13a32 32 0 0 0-55.79 17.55A32 32 0 0 0 24 88v40a104 104 0 0 0 208 0v-16a32 32 0 0 0-32-32m-48-32a16 16 0 0 1 16 16v16h-32V64a16 16 0 0 1 16-16M88 64a16 16 0 0 1 32 0v40a16 16 0 0 1-32 0ZM40 88a16 16 0 0 1 32 0v16a16 16 0 0 1-32 0Zm176 40a88 88 0 0 1-175.92 3.75A31.93 31.93 0 0 0 80 125.13a31.93 31.93 0 0 0 44.58 3.35a32.2 32.2 0 0 0 11.8 11.44A47.88 47.88 0 0 0 120 176a8 8 0 0 0 16 0a32 32 0 0 1 32-32a8 8 0 0 0 0-16h-16a16 16 0 0 1-16-16V96h64a16 16 0 0 1 16 16Z"/></svg></span>
-              <span>石头</span>
-            </button>
-            <button class="rps-choice" data-rps="scissors" type="button">
-              <span class="rps-c-ico"><svg viewBox="0 0 256 256"><path fill="currentColor" d="M212.24 30A28 28 0 0 0 161 36.77l-13 48.32l-12.95-48.32A28 28 0 1 0 81 51.26l9.38 35l-8.73-1.68a28 28 0 0 0-24.85 47.8a27.86 27.86 0 0 0-8.8 20.49V160a80 80 0 0 0 80 80h.61c43.78-.33 79.39-36.62 79.39-80.9v-3.34a55.88 55.88 0 0 0-11.77-34.27L215 51.26A27.8 27.8 0 0 0 212.24 30M97.61 38a12 12 0 0 1 22 2.9l14.77 55.15a28 28 0 0 0-14 4.77a2 2 0 0 0-.16-.26A27.65 27.65 0 0 0 108 90.35L96.42 47.12A11.94 11.94 0 0 1 97.61 38m-33.36 71.6a12 12 0 0 1 14.25-9.34l20.71 4a12 12 0 0 1 9.36 14.16a12 12 0 0 1-14.25 9.34l-20.75-4a12 12 0 0 1-9.32-14.15Zm0 40.72a12 12 0 0 1 14-9.37l10.11 2a12 12 0 0 1 9.36 14.15a12 12 0 0 1-14.2 9.35l-10-2a12 12 0 0 1-9.34-14.16ZM192 159.1c0 35.53-28.49 64.64-63.5 64.9a64.08 64.08 0 0 1-61.56-44.78a31 31 0 0 0 3.48.95l10 2a28.3 28.3 0 0 0 5.61.57a28 28 0 0 0 24.16-42.14c.79-.43 1.57-.89 2.32-1.4l.16.26a27.82 27.82 0 0 0 17.78 12l6.32 1.26a36 36 0 0 0 9.53 32.49A8 8 0 0 0 157.71 174a20 20 0 0 1-3.31-23.51a8 8 0 0 0-5.46-11.66l-15.34-3.07a12 12 0 0 1-9.35-14.15a12 12 0 0 1 14.18-9.35l21.41 4.28A40.1 40.1 0 0 1 192 155.76Zm7.59-112l-16.62 62a55.6 55.6 0 0 0-20-8.28l-2.5-.5l15.93-59.41a12 12 0 1 1 23.18 6.21Z"/></svg></span>
-              <span>剪刀</span>
-            </button>
-            <button class="rps-choice" data-rps="paper" type="button">
-              <span class="rps-c-ico"><svg viewBox="0 0 256 256"><path fill="currentColor" d="M188 88a27.75 27.75 0 0 0-12 2.71V60a28 28 0 0 0-41.36-24.6A28 28 0 0 0 80 44v6.71A27.75 27.75 0 0 0 68 48a28 28 0 0 0-28 28v76a88 88 0 0 0 176 0v-36a28 28 0 0 0-28-28m12 64a72 72 0 0 1-144 0V76a12 12 0 0 1 24 0v44a8 8 0 0 0 16 0V44a12 12 0 0 1 24 0v68a8 8 0 0 0 16 0V60a12 12 0 0 1 24 0v68.67A48.08 48.08 0 0 0 120 176a8 8 0 0 0 16 0a32 32 0 0 1 32-32a8 8 0 0 0 8-8v-20a12 12 0 0 1 24 0Z"/></svg></span>
-              <span>布</span>
-            </button>
-          </div>
-        </div>
-      </div>
-      <!-- 双人贪吃蛇：聊天页底部半框（我 vs TA，滑动/方向键控制，TA 带行为池 AI） -->
-      <div class="poke-card" id="chat-snake-panel" hidden>
-        <div class="poke-card-head">
-          <span>贪吃蛇 · <b id="snake-partner-name">TA</b></span>
-          <div class="snake-head-actions">
-            <select class="snake-diff" id="snake-mode" title="模式：经典对战 / 双人同屏对战 / 双人组队 vs TA">
-              <option value="duo" selected>我 vs TA</option>
-              <option value="pvp">双人对战</option>
-              <option value="coop">双人组队</option>
-            </select>
-            <select class="snake-diff" id="snake-food" title="同屏食物数量">
-              <option value="2" selected>🍎×2</option>
-              <option value="4">🍎×4</option>
-              <option value="6">🍎×6</option>
-              <option value="8">🍎×8</option>
-            </select>
-            <select class="snake-diff" id="snake-diff">
-              <option value="easy">慢</option>
-              <option value="normal" selected>普通</option>
-              <option value="hard">快</option>
-            </select>
-            <button class="snake-icon-btn snake-toggle" id="snake-wall" title="穿墙：撞墙从对面出来">墙</button>
-            <button class="snake-icon-btn snake-toggle" id="snake-safe" title="安全：碰自己身不死">安</button>
-            <button class="snake-icon-btn" id="snake-pause" title="暂停/继续">⏸</button>
-            <button class="snake-icon-btn" id="snake-fs" title="全屏">⛶</button>
-            <button class="poke-card-close" id="chat-snake-close">✕</button>
-          </div>
-        </div>
-        <div class="poke-card-scroll">
-          <div class="snake-score" id="snake-score">胜 0 · 负 0 · 平 0</div>
-          <div class="snake-best" id="snake-best" hidden></div>
-          <canvas class="snake-canvas" id="snake-canvas" width="300" height="300"></canvas>
-          <div class="snake-hint" id="snake-hint">点开始 · 滑动控制方向</div>
-          <div class="snake-result" id="snake-result" hidden></div>
-          <div class="snake-controls">
-            <button class="snake-btn" id="snake-start" type="button">开始</button>
-            <button class="snake-btn" id="snake-restart" type="button" hidden>再来一局</button>
-            <button class="snake-btn" id="snake-resume" type="button" hidden>继续上局</button>
-          </div>
-          <div class="snake-dpad" id="snake-dpad">
-            <button class="snake-dp" data-dir="up" type="button">▲</button>
-            <button class="snake-dp" data-dir="left" type="button">◀</button>
-            <button class="snake-dp" data-dir="down" type="button">▼</button>
-            <button class="snake-dp" data-dir="right" type="button">▶</button>
-          </div>
-        </div>
-      </div>
-      <!-- 双人 Pong 小游戏：聊天页底部半框（玩家左挡板 / TA 右挡板 AI） -->
-      <div class="poke-card" id="chat-pong-panel" hidden>
-        <div class="poke-card-head">
-          <span>Pong · <b id="pong-partner-name">TA</b></span>
-          <button class="poke-card-close" id="pong-close">✕</button>
-        </div>
-        <div class="poke-card-scroll">
-          <div class="pong-wrap">
-            <div class="pong-bar">
-              <div class="pong-bar-left">
-                <select class="pong-diff" id="pong-diff">
-                  <option value="casual" selected>休闲</option>
-                  <option value="easy">简单</option>
-                  <option value="normal">普通</option>
-                  <option value="hard">困难</option>
-                </select>
-                <span id="pong-win-tip">先得 3 分获胜</span>
-              </div>
-              <div class="pong-bar-right">
-                <button class="pong-icon-btn" id="pong-pause" title="暂停/继续">⏸</button>
-                <button class="pong-icon-btn" id="pong-fs" title="全屏">⛶</button>
-                <button class="pong-sound" id="pong-sound" title="音效开关">🔊</button>
-              </div>
-            </div>
-            <div class="pong-score" id="pong-score"><span class="pong-s-ta">0 TA</span><span class="pong-s-sep">:</span><span class="pong-s-you">你 0</span></div>
-            <div class="pong-canvas-box">
-              <canvas id="pong-canvas" width="400" height="240"></canvas>
-              <div class="pong-hint" id="pong-hint"></div>
-              <div class="pong-overlay" id="pong-overlay">
-                <div class="pong-overlay-title" id="pong-overlay-title">双人 Pong</div>
-                <div class="pong-overlay-body" id="pong-overlay-body"></div>
-                <div class="pong-overlay-btns">
-                  <button class="pong-overlay-btn" id="pong-overlay-btn" type="button">开始</button>
-                  <button class="pong-overlay-btn pong-overlay-btn2" id="pong-overlay-btn2" type="button" hidden>继续上局</button>
-                </div>
-              </div>
-            </div>
-            <div class="pong-foot">你控制右侧挡板 · 手机：按住画面上下拖动 · 电脑：↑↓ 或 W S</div>
-          </div>
-        </div>
-      </div>
-      <!-- 双人打砖块：聊天页底部半框（合作清砖：玩家右挡板 / 梦角左挡板由代码控制，球数 1~3 可设） -->
-      <div class="poke-card" id="chat-brick-panel" hidden>
-        <div class="poke-card-head">
-          <span>双人打砖块 · <b id="brick-partner-name">TA</b></span>
-          <div class="snake-head-actions">
-            <select class="snake-diff" id="brick-diff">
-              <option value="easy" selected>轻松</option>
-              <option value="normal">普通</option>
-              <option value="hard">困难</option>
-            </select>
-            <select class="snake-diff" id="brick-balls" title="球数量（随时调整）">
-              <option value="1" selected>1 球</option>
-              <option value="2">2 球</option>
-              <option value="3">3 球</option>
-            </select>
-            <button class="snake-icon-btn" id="brick-pause" title="暂停/继续">⏸</button>
-            <button class="snake-icon-btn" id="brick-sound" title="音效开关">🔊</button>
-            <button class="snake-icon-btn" id="brick-fs" title="全屏">⛶</button>
-            <button class="poke-card-close" id="chat-brick-close">✕</button>
-          </div>
-        </div>
-        <div class="poke-card-scroll">
-          <div class="brick-wrap">
-            <div class="brick-info">
-              <span>得分 <b id="brick-score">0</b></span>
-              <span class="brick-combo" id="brick-combo"></span>
-              <span class="brick-lives" id="brick-lives"></span>
-              <span>第 <b id="brick-level">1</b> 层</span>
-            </div>
-            <div class="pong-canvas-box">
-              <canvas id="brick-canvas" width="400" height="340"></canvas>
-              <div class="pong-hint" id="brick-hint"></div>
-              <div class="pong-overlay" id="brick-overlay">
-                <div class="pong-overlay-title" id="brick-overlay-title">双人打砖块</div>
-                <div class="pong-overlay-body" id="brick-overlay-body"></div>
-                <div class="pong-overlay-btns">
-                  <button class="pong-overlay-btn" id="brick-overlay-btn" type="button">开始</button>
-                  <button class="pong-overlay-btn pong-overlay-btn2" id="brick-overlay-close" type="button" hidden>返回小游戏</button>
-                </div>
-              </div>
-            </div>
-            <div class="pong-foot">你控制右挡板 · <span id="brick-foot-name">TA</span> 控制左挡板 · 按住拖动</div>
-          </div>
-        </div>
-      </div>
-      <!-- 双人钓鱼：聊天页底部半框（你与 TA 各一根鱼竿，时机收竿 → 今日收获 → 出售心意币 + 图鉴 + TA送礼+陪伴奖励） -->
-      <div class="poke-card" id="chat-fish-panel" hidden>
-        <div class="poke-card-head">
-          <span>钓鱼 · <b id="fish-partner-name">TA</b></span>
-          <div class="snake-head-actions">
-            <button class="snake-icon-btn" id="fish-sound" title="音效开关">🔊</button>
-                        <button class="snake-icon-btn" id="fish-fs" title="全屏">⛶</button>
-<button class="poke-card-close fish-close" id="fish-close">✕</button>
-          </div>
-        </div>
-        <div class="poke-card-scroll">
-          <div class="fish-wrap">
-            <div class="fish-scene" id="fish-scene" data-mine="idle" data-ta="idle">
-              <div class="fish-sky"></div>
-              <div class="fish-persons">
-                <div class="fish-person fish-me">
-                  <div class="fish-rod"></div>
-                  <span class="fish-person-name">你</span>
-                </div>
-                <div class="fish-person fish-ta">
-                  <span class="fish-ta-state" id="fish-ta-state">待着</span>
-                  <div class="fish-rod"></div>
-                  <span class="fish-person-name">TA</span>
-                </div>
-              </div>
-              <div class="fish-water"></div>
-            </div>
-            <div class="fish-status" id="fish-status"></div>
-            <div class="fish-timing-wrap" id="fish-timing-wrap" hidden>
-              <div class="fish-timing-label">鱼漂变蓝晃动了 · 光标进蓝区收竿最佳</div>
-              <div class="fish-timing-bar" id="fish-timing-bar"><span class="fish-timing-good"></span><span class="fish-timing-cursor" id="fish-timing-cursor"></span></div>
-            </div>
-            <div class="fish-actions">
-              <button class="fish-btn" id="fish-cast" type="button">抛竿</button>
-              <button class="fish-btn fish-reel" id="fish-reel" type="button" hidden>收竿</button>
-            </div>
-            <div class="fish-tabs">
-              <button class="fish-tab sel" data-ftab="today" type="button">今日收获</button>
-              <button class="fish-tab" data-ftab="dex" type="button">鱼图鉴</button>
-              <button class="fish-tab" data-ftab="gifts" type="button">TA送我的</button>
-            </div>
-            <div class="fish-page" id="fish-page"></div>
-          </div>
-        </div>
-      </div>
-      <!-- 四子棋：聊天页底部半框（经典 7×6 落子棋盘，梦角由代码控制、每回合行为状态随机） -->
-      <div class="poke-card" id="chat-c4-panel" hidden>
-        <div class="poke-card-head">
-          <span>四子棋 · <b id="c4-partner-name">TA</b></span>
-          <div class="snake-head-actions">
-            <button class="snake-icon-btn" id="c4-sound" title="音效开关">🔊</button>
-            <button class="snake-icon-btn" id="c4-fs" title="全屏">⛶</button>            <button class="poke-card-close" id="c4-close">✕</button>
-          </div>
-        </div>
-        <div class="poke-card-scroll">
-          <div class="c4-wrap">
-            <div class="c4-players">
-              <span class="c4-side">🔵 你</span>
-              <span class="c4-vs">VS</span>
-              <span class="c4-side">🟡 <span id="c4-side-name">TA</span></span>
-            </div>
-            <div class="c4-stage" id="c4-stage">
-              <div class="c4-board" id="c4-board"></div>
-              <div class="pong-overlay c4-overlay" id="c4-overlay" hidden>
-                <div class="pong-overlay-title" id="c4-ov-title">四子棋</div>
-                <div class="pong-overlay-body" id="c4-ov-body"></div>
-                <div class="pong-overlay-btns">
-                  <button class="pong-overlay-btn" id="c4-btn-start" type="button">开始对局</button>
-                  <button class="pong-overlay-btn pong-overlay-btn2" id="c4-btn-end" type="button" hidden>结束游戏</button>
-                </div>
-              </div>
-            </div>
-            <div class="c4-status" id="c4-status">点击「开始对局」</div>
-            <div class="pong-foot">轮流落子 · 先连成四子的一方获胜 · TA今天的状态是随机的</div>
-          </div>
-        </div>
-      </div>
-      <!-- 合作扫雷：聊天页底部半框（和 TA 轮流探索一张雷区，共用 ❤️❤️❤️，踩雷不即死） -->
-      <div class="poke-card" id="chat-ms-panel" hidden>
-        <div class="poke-card-head">
-          <span>合作扫雷 · <b id="ms-partner-name">TA</b></span>
-          <div class="snake-head-actions">
-            <button class="snake-icon-btn" id="ms-mode" title="插旗模式开关">⛏️</button>
-            <button class="snake-icon-btn" id="ms-bag" title="小收藏">🎒</button>
-            <button class="snake-icon-btn" id="ms-sound" title="音效开关">🔊</button>
-            <button class="snake-icon-btn" id="ms-fs" title="全屏">⛶</button>            <button class="poke-card-close" id="ms-close">✕</button>
-          </div>
-        </div>
-        <div class="poke-card-scroll">
-          <div class="ms-wrap">
-            <div class="ms-topbar"><span class="ms-hearts" id="ms-lives"></span><span class="ms-prog" id="ms-prog"></span></div>
-            <div class="ms-stage" id="ms-stage">
-              <div class="ms-board" id="ms-board"></div>
-              <div class="pong-overlay ms-overlay" id="ms-overlay" hidden>
-                <div class="pong-overlay-title" id="ms-ov-title">合作扫雷</div>
-                <div class="pong-overlay-body" id="ms-ov-body"></div>
-                <div class="pong-overlay-btns">
-                  <button class="pong-overlay-btn" id="ms-btn-start" type="button">开始探索</button>
-                  <button class="pong-overlay-btn pong-overlay-btn2" id="ms-btn-end" type="button" hidden>结束游戏</button>
-                </div>
-              </div>
-            </div>
-            <div class="ms-talk" id="ms-talk" hidden><div class="ms-talk-bubble"></div></div>
-            <div class="ms-status" id="ms-status">选择难度开始探索</div>
-            <div class="ms-foot">点击挖开 · 长按插旗 · 数字=周围雷数 · 🪙🎁🌸 藏在格子里</div>
-          </div>
-        </div>
-      </div>
-      <!-- 记忆翻牌：聊天页底部半框（双人合作记忆配对，TA 由代码控制、按难度概率记牌） -->
-      <div class="poke-card" id="chat-memory-panel" hidden>
-        <div class="poke-card-head">
-          <span>记忆翻牌 · <b id="memory-partner-name">TA</b></span>
-          <div class="snake-head-actions">
-            <select class="snake-diff" id="memory-diff" title="难度">
-              <option value="casual">🌱 休闲 3×4</option>
-              <option value="normal" selected>🌙 普通 4×4</option>
-              <option value="hard">⭐ 挑战 4×5</option>
-            </select>
-            <button class="snake-icon-btn" id="memory-sound" title="音效开关">🔊</button>
-            <button class="snake-icon-btn" id="memory-fs" title="全屏">⛶</button>            <button class="poke-card-close" id="memory-close">✕</button>
-          </div>
-        </div>
-        <div class="poke-card-scroll">
-          <div class="mgm-wrap">
-            <div class="mgm-info">
-              <span class="mgm-turn" id="memory-turn"></span>
-              <span class="mgm-chem" id="memory-chem">💕 默契 —</span>
-              <span class="mgm-coin" id="memory-coin">心意币 +0</span>
-            </div>
-            <div class="mgm-stage">
-              <div class="memory-board" id="memory-board"></div>
-              <div class="pong-overlay c4-overlay mgm-overlay" id="memory-overlay" hidden>
-                <div class="pong-overlay-title" id="memory-overlay-title">记忆翻牌</div>
-                <div class="pong-overlay-body" id="memory-overlay-body"></div>
-                <div class="pong-overlay-btns">
-                  <button class="pong-overlay-btn" id="memory-overlay-btn" type="button">开始</button>
-                  <button class="pong-overlay-btn pong-overlay-btn2" id="memory-overlay-btn2" type="button" hidden>返回小游戏</button>
-                </div>
-              </div>
-            </div>
-            <div class="mgm-hint" id="memory-hint"></div>
-            <div class="pong-foot">和 TA 轮流翻两张 · 配对成功再来一次 · 一起找完所有牌</div>
-          </div>
-        </div>
-      </div>
-      <!-- 五子棋：聊天页底部半框（11×11 迷你盘落子对战，梦角由代码控制、每回合行为状态随机） -->
-      <div class="poke-card" id="chat-gomoku-panel" hidden>
-        <div class="poke-card-head">
-          <span>五子棋 · <b id="gk-partner-name">TA</b></span>
-          <div class="snake-head-actions">
-            <select class="snake-diff" id="gk-diff" title="难度（对局中也可换，立即生效）">
-              <option value="casual">🌱 休闲</option>
-              <option value="daily" selected>🌙 日常</option>
-              <option value="serious">⭐ 认真</option>
-            </select>
-            <button class="snake-icon-btn" id="gk-undo" title="悔棋（每局 1 次）">↩</button>
-            <button class="snake-icon-btn" id="gk-sound" title="音效开关">🔊</button>
-            <button class="snake-icon-btn" id="gk-fs" title="全屏">⛶</button>            <button class="poke-card-close" id="gk-close">✕</button>
-          </div>
-        </div>
-        <div class="poke-card-scroll">
-          <div class="gk-wrap">
-            <div class="c4-players">
-              <span class="c4-side">🔵 你</span>
-              <span class="c4-vs">VS</span>
-              <span class="c4-side">⚪ <span id="gk-side-name">TA</span></span>
-            </div>
-            <div class="gk-stage" id="gk-stage">
-              <div class="gk-board" id="gk-board"></div>
-              <div class="pong-overlay c4-overlay" id="gk-overlay" hidden>
-                <div class="pong-overlay-title" id="gk-ov-title">五子棋</div>
-                <div class="pong-overlay-body" id="gk-ov-body"></div>
-                <div class="pong-overlay-btns">
-                  <button class="pong-overlay-btn" id="gk-btn-start" type="button">开始对局</button>
-                  <button class="pong-overlay-btn pong-overlay-btn2" id="gk-btn-end" type="button" hidden>结束游戏</button>
-                </div>
-              </div>
-            </div>
-            <div class="gk-status" id="gk-status">点击「开始对局」</div>
-            <div class="pong-foot">轮流落子 · 先连成五子的一方获胜 · TA今天的状态是随机的</div>
-          </div>
-        </div>
-      </div>
-      <!-- 连连看：聊天页底部半框（和 TA 轮流消除同款图案，两折连线规则，合作清完棋盘） -->
-      <div class="poke-card" id="chat-linkup-panel" hidden>
-        <div class="poke-card-head">
-          <span>连连看 · <b id="lk-partner-name">TA</b></span>
-          <div class="snake-head-actions">
-            <select class="snake-diff" id="lk-diff" title="难度">
-              <option value="casual">🌱 休闲 6×5</option>
-              <option value="normal" selected>🌙 普通 8×6</option>
-              <option value="hard">⭐ 挑战 10×6</option>
-              <option value="king">👑 王者 12×7</option>
-              <option value="legend">🏆 传奇 12×8</option>
-            </select>
-            <button class="snake-icon-btn" id="lk-theme" title="图案主题（点击切换）">🍎</button>
-            <button class="snake-icon-btn" id="lk-hint" title="提示（×3）">💡</button>
-            <button class="snake-icon-btn" id="lk-shuffle" title="洗牌（×2）">🔀</button>
-            <button class="snake-icon-btn" id="lk-sound" title="音效开关">🔊</button>
-            <button class="snake-icon-btn" id="lk-fs" title="全屏">⛶</button>            <button class="poke-card-close" id="lk-close">✕</button>
-          </div>
-        </div>
-        <div class="poke-card-scroll">
-          <div class="lk-wrap">
-            <div class="lk-info" id="lk-info"></div>
-            <div class="lk-stage" id="lk-stage">
-              <div class="lk-board" id="lk-board"></div>
-              <div class="pong-overlay c4-overlay lk-overlay" id="lk-overlay" hidden>
-                <div class="pong-overlay-title" id="lk-ov-title">连连看</div>
-                <div class="pong-overlay-body" id="lk-ov-body"></div>
-                <div class="pong-overlay-btns">
-                  <button class="pong-overlay-btn" id="lk-btn-start" type="button">开始对局</button>
-                  <button class="pong-overlay-btn pong-overlay-btn2" id="lk-btn-end" type="button" hidden>结束游戏</button>
-                </div>
-              </div>
-            </div>
-            <div class="lk-status" id="lk-status">点击「开始对局」</div>
-            <div class="pong-foot">轮流点两张相同图案 · 连线不超过两个弯 · 一起清完整张棋盘</div>
-          </div>
-        </div>
-      </div>
-      <!-- 消消乐：聊天页底部半框（和 TA 轮流交换相邻格凑三连，共同冲目标分） -->
-      <div class="poke-card" id="chat-match3-panel" hidden>
-        <div class="poke-card-head">
-          <span>消消乐 · <b id="m3-partner-name">TA</b></span>
-          <div class="snake-head-actions">
-            <select class="snake-diff" id="m3-diff" title="难度">
-              <option value="casual">🌱 休闲 300分</option>
-              <option value="normal" selected>🌙 普通 600分</option>
-              <option value="hard">⭐ 挑战 1000分</option>
-            </select>
-            <!-- #453 模式：简单=经典三消无道具（默认）；道具=四连直线/L·T炸弹/五连彩虹 -->
-            <select class="snake-diff" id="m3-mode" title="模式：简单无道具（默认）/ 道具模式（四连出直线、L·T出炸弹、五连出彩虹），新对局生效">
-              <option value="simple" selected>🌿 简单</option>
-              <option value="item">💣 道具</option>
-            </select>
-            <button class="snake-icon-btn" id="m3-hint" title="提示">💡</button>
-            <button class="snake-icon-btn" id="m3-sound" title="音效开关">🔊</button>
-            <button class="snake-icon-btn" id="m3-fs" title="全屏">⛶</button>            <button class="poke-card-close" id="m3-close">✕</button>
-          </div>
-        </div>
-        <div class="poke-card-scroll">
-          <div class="m3-wrap">
-            <div class="m3-info" id="m3-info"></div>
-            <div class="m3-stage" id="m3-stage">
-              <div class="m3-board" id="m3-board"></div>
-              <div class="pong-overlay c4-overlay m3-overlay" id="m3-overlay" hidden>
-                <div class="pong-overlay-title" id="m3-ov-title">消消乐</div>
-                <div class="pong-overlay-body" id="m3-ov-body"></div>
-                <div class="pong-overlay-btns">
-                  <button class="pong-overlay-btn" id="m3-btn-start" type="button">开始对局</button>
-                  <button class="pong-overlay-btn pong-overlay-btn2" id="m3-btn-end" type="button" hidden>结束游戏</button>
-                </div>
-              </div>
-            </div>
-            <div class="m3-status" id="m3-status">点击「开始对局」</div>
-            <div class="pong-foot">轮流交换相邻两格 · 凑成同款三连就消除 · 一起冲目标分</div>
-          </div>
-        </div>
-      </div>
-      <!-- 心意币拍卖会：聊天页底部半框（和 TA 轮番举牌竞拍，落槌价真扣心意币，拍品收进🎒） -->
-      <div class="poke-card" id="chat-auction-panel" hidden>
-        <div class="poke-card-head">
-          <span>心意币拍卖会 · <b id="au-partner-name">TA</b></span>
-          <div class="snake-head-actions">
-            <button class="snake-icon-btn" id="au-help-btn" title="怎么玩（玩法说明）">❓</button>
-            <button class="snake-icon-btn" id="au-bag" title="拍品收藏">🎒</button>
-            <button class="snake-icon-btn" id="au-sound" title="音效开关">🔊</button>
-            <button class="snake-icon-btn" id="au-history" title="拍卖记录">📜</button>
-            <button class="snake-icon-btn" id="au-add" title="自制拍品">➕</button>
-            <button class="snake-icon-btn" id="au-fs" title="全屏">⛶</button>            <button class="poke-card-close" id="au-close">✕</button>
-          </div>
-        </div>
-        <div class="poke-card-scroll">
-          <div class="au-wrap">
-            <div class="au-topbar"><span id="au-lot">每场 3 件拍品</span><span class="au-balance" id="au-balance">心意币 —</span></div>
-            <div class="au-stage" id="au-stage">
-              <div class="au-item" id="au-item"></div>
-              <div class="pong-overlay au-overlay" id="au-overlay" hidden>
-                <div class="pong-overlay-title" id="au-ov-title">心意币拍卖会</div>
-                <div class="pong-overlay-body" id="au-ov-body"></div>
-                <div class="pong-overlay-btns">
-                  <button class="pong-overlay-btn" id="au-btn-start" type="button">开场拍卖</button>
-                  <button class="pong-overlay-btn pong-overlay-btn2" id="au-btn-end" type="button" hidden>收摊</button>
-                </div>
-              </div>
-              <div class="pong-overlay au-overlay" id="au-help" hidden>
-                <div class="pong-overlay-title">怎么玩 · 拍卖会</div>
-                <div class="au-help-body">
-                  <b>①&nbsp;看拍品</b>：每件都有起拍价，先看它值多少。<br>
-                  <b>②&nbsp;出价</b>：点一个“出 ¥X”档位＝在当前价上加一档，压上你的价（按钮会直接显示你要出的钱）。<br>
-                  <b>③&nbsp;轮替</b>：你出价后 TA 会掂量掂量——跟价或放弃，轮到你时按钮才亮起。<br>
-                  <b>④&nbsp;成交</b>：谁最后是最高价，这件就归谁。<br>
-                  <b>·</b> 你是最高价 → 点<b>「落槌」</b>＝按现价买下（真扣心意币，收进 🎒）。<br>
-                  <b>·</b> TA 最高价 → 点<b>「放弃这件」</b>＝这件归 TA，不扣你的钱。<br>
-                  <b>·</b> 双方都不要 → <b>流拍</b>，收回仓库。<br>
-                  <b>⑤&nbsp;彩蛋</b>：TA 拍走的拍品过几天会寄回给你。<br>
-                  <b>⑥&nbsp;暗价</b>：TA 每件的心理价位是暗的（志在必得/常规/抠门/虚张声势），猜不准才好玩。<br>
-                  <b>⑦&nbsp;自制拍品</b>：点顶部 ➕ 打开编辑台——选一枚 emoji 或上传一张商品图，填名称/起拍价（还能留一句拍下彩蛋、勾「神秘拍品」蒙面上拍），你们的小宝贝就进奖池；编辑台底部的库条点一下即可改，删除要先确认。
-                </div>
-                <div class="pong-overlay-btns">
-                  <button class="pong-overlay-btn" id="au-help-close" type="button">知道啦</button>
-                </div>
-              </div>
-              <div class="au-fs-overlay" id="au-intro" hidden>
-                <div class="au-intro-title">💎 心意币拍卖会</div>
-                <div class="au-intro-steps" id="au-intro-steps"></div>
-                <div class="au-intro-stat" id="au-intro-stat"></div>
-                <div class="pong-overlay-btns">
-                  <button class="pong-overlay-btn" id="au-intro-start" type="button">开始拍卖</button>
-                  <button class="pong-overlay-btn pong-overlay-btn2" id="au-intro-help" type="button">详细玩法</button>
-                  <!-- #341 教学浮层是全屏的、盖住头部 ✕，没有这个出口用户想走只能先开局 -->
-                  <button class="pong-overlay-btn pong-overlay-btn2" id="au-intro-exit" type="button">先不玩</button>
-                </div>
-              </div>
-              <!-- #1041 自制拍品全屏编辑台（方案 A，用户选定）：所见即所得预览卡＋emoji 自选＋商品图片＋
-                   名称/介绍/底价/彩蛋＋蒙面开关；库条＝已有自制拍品点选即改。静态锚点在此、内容由 auction.js 渲染。 -->
-              <div class="au-fs-overlay au-editor" id="au-editor" hidden>
-                <div class="au-ed-card">
-                  <div class="au-ed-head">
-                    <div class="au-ed-title" id="au-ed-title">✏️ 自制拍品</div>
-                    <button class="snake-icon-btn" id="au-ed-close" type="button" title="关闭">✕</button>
-                  </div>
-                  <div class="au-ed-preview" id="au-ed-preview"></div>
-                  <div class="au-ed-body">
-                    <div class="au-ed-label">图标 · 选一个 emoji</div>
-                    <div class="au-ed-grid" id="au-ed-grid"></div>
-                    <div class="au-ed-label">商品图片（可选，盖过 emoji）</div>
-                    <div class="au-ed-imgrow">
-                      <div class="au-ed-imgprev" id="au-ed-imgprev">🖼️</div>
-                      <button class="au-ed-imgbtn" id="au-ed-imgbtn" type="button">上传图片</button>
-                      <button class="au-ed-imgbtn" id="au-ed-imgclear" type="button" hidden>移除</button>
-                    </div>
-                    <div class="au-ed-label">名称与底价</div>
-                    <input class="au-ed-inp" id="au-ed-name" maxlength="24" placeholder="名称（如：我们的灯笼）">
-                    <div class="au-ed-row2">
-                      <input class="au-ed-inp" id="au-ed-desc" maxlength="40" placeholder="一句话介绍（可选）">
-                      <input class="au-ed-inp au-ed-price" id="au-ed-base" inputmode="decimal" placeholder="¥20">
-                    </div>
-                    <div class="au-ed-label">拍下后的一句话彩蛋（可空）</div>
-                    <input class="au-ed-inp" id="au-ed-wish" maxlength="30" placeholder="例：第一盏留给你点">
-                    <label class="au-ed-switch"><span>神秘拍品（🎁 蒙面登场，落槌才揭晓）</span><input type="checkbox" id="au-ed-mystery"><i></i></label>
-                    <div class="au-ed-hint" id="au-ed-hint" hidden></div>
-                  </div>
-                  <div class="au-ed-lib" id="au-ed-lib"></div>
-                  <div class="au-ed-foot">
-                    <button class="pong-overlay-btn pong-overlay-btn2 au-ed-del" id="au-ed-del" type="button" hidden>删除</button>
-                    <button class="pong-overlay-btn pong-overlay-btn2" id="au-ed-cancel" type="button">取消</button>
-                    <button class="pong-overlay-btn" id="au-ed-save" type="button">保存</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="au-bids">
-              <button class="pong-overlay-btn" id="au-bid1" type="button">出 ¥</button>
-              <button class="pong-overlay-btn" id="au-bid5" type="button">出 ¥</button>
-              <button class="pong-overlay-btn" id="au-bid13" type="button">出 ¥</button>
-              <button class="pong-overlay-btn pong-overlay-btn2" id="au-pass" type="button">放弃这件</button>
-            </div>
-            <!-- #346 余额不足/账本未就绪提示行：出价键静默置灰时告诉用户为什么 -->
-            <div class="au-wallet-hint" id="au-wallet-hint" hidden></div>
-            <div class="au-status" id="au-status">点击「开场拍卖」</div>
-            <div class="pong-foot">落槌价从心意币里真扣 · TA 的心理价位是暗的 · 拍到的收进 🎒</div>
-          </div>
-        </div>
-      </div>
-      <!-- 游乐室：聊天页底部半框（小游戏战绩聚合 + 徽章 + 幸运游戏 + 限定摆件图鉴，#301） -->
-      <div class="poke-card" id="chat-arcade-panel" hidden>
-        <div class="poke-card-head">
-          <span>游乐室 · 和 <b id="arc-partner-name">TA</b> 的战绩</span>
-          <div class="snake-head-actions">
-            <button class="poke-card-close" id="arc-close">✕</button>
-          </div>
-        </div>
-        <div class="poke-card-scroll">
-          <div class="arc-wrap">
-            <div id="arc-body"></div>
-            <div class="pong-foot">幸运游戏当日奖励 ×2 · 胜利有概率掉落限定摆件 · 战绩按联系人桌面分开记</div>
-          </div>
         </div>
       </div>
       <!-- 红包：聊天页底部半框（我和 TA 互发红包，情侣特殊金额 / 随机 / 七夕特别） -->
@@ -17292,14 +16726,13 @@ html[data-splash-skip] #splash { display: none !important; }
     </div>
 
 <div class="more-panel" id="chat-more-panel" hidden>
-        <!-- v3.15.x：功能增多后改为顶部分类 chips 切换（互动/小游戏/工具/TA的提问）。
+        <!-- v3.15.x：功能增多后改为顶部分类 chips 切换（互动/工具/TA的提问）。
              功能按钮元素与 ID 全部保留（各功能模块按 ID 接线），仅加 data-mcat 由 JS 过滤显示；
              每个功能只归属一个分类、分类间互不重复（v3.16.x 起移除「常用」页签，原常用默认项并入所属分类） -->
         <!-- v3.16.x：群聊页打开更多面板时，@群成员 显示在分类 tabs 行最右（仅群聊有，聊天页隐藏） -->
         <div class="more-tabs" id="more-tabs">
           <button class="more-tab sel" type="button" data-mcat="chat">互动</button>
           <button class="more-tab" type="button" data-mcat="tool">工具</button>
-          <button class="more-tab" type="button" data-mcat="game">小游戏</button>
           <button class="more-tab" type="button" data-mcat="ask">TA的提问</button>
           <button class="gc-more-at-top" id="gc-more-at" title="@群成员" hidden>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 006 0v-1a10 10 0 10-20 0v1a10 10 0 0010 10"/></svg>@群成员
@@ -17331,10 +16764,6 @@ html[data-splash-skip] #splash { display: none !important; }
             <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 14.5V7.2a1.5 1.5 0 0 1 3 0v7.3"/><path d="M11 14.5V6.5a1.5 1.5 0 0 1 3 0v8"/><path d="M14 14.5V7.8a1.5 1.5 0 0 1 3 0v6.7"/><path d="M6.5 14.5h12c0 3.5-2.7 6-6 6s-6-2.5-6-6"/><path d="M6 5a8.5 8.5 0 0 1 12 0"/></svg></span>
             <span>拍一拍</span>
           </button>
-          <button class="more-item" id="more-rps" data-mcat="game" title="猜拳">
-            <span class="mi-ico"><svg viewBox="0 0 256 256"><path fill="currentColor" d="M200 80h-16V64a32 32 0 0 0-56-21.13a32 32 0 0 0-55.79 17.55A32 32 0 0 0 24 88v40a104 104 0 0 0 208 0v-16a32 32 0 0 0-32-32m-48-32a16 16 0 0 1 16 16v16h-32V64a16 16 0 0 1 16-16M88 64a16 16 0 0 1 32 0v40a16 16 0 0 1-32 0ZM40 88a16 16 0 0 1 32 0v16a16 16 0 0 1-32 0Zm176 40a88 88 0 0 1-175.92 3.75A31.93 31.93 0 0 0 80 125.13a31.93 31.93 0 0 0 44.58 3.35a32.2 32.2 0 0 0 11.8 11.44A47.88 47.88 0 0 0 120 176a8 8 0 0 0 16 0a32 32 0 0 1 32-32a8 8 0 0 0 0-16h-16a16 16 0 0 1-16-16V96h64a16 16 0 0 1 16 16Z"/></svg></span>
-            <span>猜拳</span>
-          </button>
           <button class="more-item" id="more-rp" data-mcat="chat" title="发红包">
             <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9c3 2 6 3 9 3s6-1 9-3"/><circle cx="12" cy="9" r="1.4"/></svg></span>
             <span>红包</span>
@@ -17365,50 +16794,6 @@ html[data-splash-skip] #splash { display: none !important; }
           </button>
           <!-- #982：聊天侧入口从「更多 → 工具」移到「聊天设置 → 美化」（用户直派「屏幕适配不该放在
                聊天的更多功能的工具里，要放在聊天的聊天设置里」）——入口行见 #cs-screen-adj，勿在此重建 -->
-          <button class="more-item" id="more-pong" data-mcat="game" title="双人Pong">
-            <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="18" rx="2"/><rect x="4" y="8" width="2" height="8" rx="1" fill="currentColor"/><rect x="18" y="8" width="2" height="8" rx="1" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg></span>
-            <span>Pong</span>
-          </button>
-          <button class="more-item" id="more-snake" data-mcat="game" title="双人贪吃蛇">
-            <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h3v3H7zM14 14h3v3h-3z"/></svg></span>
-            <span>贪吃蛇</span>
-          </button>
-          <button class="more-item" id="more-brick" data-mcat="game" title="双人打砖块（合作）">
-            <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M3 9.3h18M3 14.6h18"/><path d="M12 4v5.3M7.5 9.3v5.3M16.5 9.3v5.3M12 14.6V20"/></svg></span>
-            <span>打砖块</span>
-          </button>
-          <button class="more-item" id="more-fish" data-mcat="game" title="双人钓鱼">
-            <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 8.8l4.2-3.3"/><path d="M17.8 16.2l4.2 3.3"/><ellipse cx="10.6" cy="12.5" rx="7.2" ry="4.3"/><circle cx="7.2" cy="11.3" r=".6" fill="currentColor" stroke="none"/><path d="M3 5.2q1.7-1.1 3.4 0q1.7-1.1 3.4 0q1.7-1.1 3.4 0"/></svg></span>
-            <span>钓鱼</span>
-          </button>
-          <button class="more-item" id="more-c4" data-mcat="game" title="四子棋">
-            <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3.2"/><circle cx="16" cy="8" r="3.2"/><circle cx="8" cy="16" r="3.2"/><circle cx="16" cy="16" r="3.2"/></svg></span>
-            <span>四子棋</span>
-          </button>
-          <button class="more-item" id="more-ms" data-mcat="game" title="合作扫雷（和TA一起探索雷区）">
-            <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/><circle cx="12" cy="12" r="2.3"/></svg></span>
-            <span>扫雷</span>
-          </button>
-          <button class="more-item" id="more-memory" data-mcat="game" title="记忆翻牌（和TA合作）">
-            <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.6 3.4l8.8-2 3.4 3.2-8.8 2z"/><rect x="3.4" y="7" width="15.6" height="13.4" rx="1.8"/><path d="M11.2 11.8l.9 1.9 1.9.9-1.9.9-.9 1.9-.9-1.9-1.9-.9 1.9-.9z"/></svg></span>
-            <span>记忆翻牌</span>
-          </button>
-          <button class="more-item" id="more-gomoku" data-mcat="game" title="五子棋">
-            <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="M3.5 9.2h17M3.5 14.8h17M9.2 3.5v17M14.8 3.5v17"/><circle cx="9.2" cy="9.2" r="1.5" fill="currentColor" stroke="none"/><circle cx="14.8" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="9.2" cy="14.8" r="1.5" fill="currentColor" stroke="none"/></svg></span>
-            <span>五子棋</span>
-          </button>
-          <button class="more-item" id="more-linkup" data-mcat="game" title="连连看（和TA合作）">
-            <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6.5" width="8" height="8" rx="1.8"/><rect x="13" y="10.5" width="8" height="8" rx="1.8"/><path d="M11 12.5h2" stroke-dasharray="1.4 1.8"/></svg></span>
-            <span>连连看</span>
-          </button>
-          <button class="more-item" id="more-match3" data-mcat="game" title="消消乐（和TA轮流消除）">
-            <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.2" cy="15" r="2.7"/><circle cx="12" cy="8.2" r="2.7"/><circle cx="16.8" cy="15" r="2.7"/></svg></span>
-            <span>消消乐</span>
-          </button>
-          <button class="more-item" id="more-auction" data-mcat="game" title="心意币拍卖会（和TA竞拍）">
-            <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.4 5.4l6.2 6.2M14.6 3.2l6.2 6.2-2.2 2.2-6.2-6.2z"/><path d="M13.6 9.8l-8.4 8.4"/><path d="M4.2 21h7"/></svg></span>
-            <span>拍卖会</span>
-          </button>
           <button class="more-item" id="more-ck" data-mcat="tool" title="寻踪（打开 TA 的日常）">
             <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/><path d="M12 3a9 9 0 000 18"/></svg></span>
             <span>寻踪</span>
@@ -17439,7 +16824,7 @@ html[data-splash-skip] #splash { display: none !important; }
             <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 5.4 5.7.3-4.4 3.6 1.5 5.5-4.6-3.3-4.6 3.3 1.5-5.5-4.4-3.6 5.7-.3z"/></svg></span>
             <span>吐槽</span>
           </button>
-          <button class="more-item" id="more-invite-now" title="让TA现在邀请一次（猜拳/Pong/贪吃蛇/贴贴，话术来自字卡库「TA的邀请」）">
+          <button class="more-item" id="more-invite-now" title="让TA现在邀请一次（贴贴，话术来自字卡库「TA的邀请」）">
             <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="11" rx="5"/><path d="M7 10.5v3M5.5 12h3"/><path d="M15.5 11h.01M18.5 13h.01"/></svg></span>
             <span>邀请</span>
           </button>
@@ -17975,7 +17360,7 @@ html[data-splash-skip] #splash { display: none !important; }
   // v3.5.123：readonly 起手（防 Chrome 密码弹条破坏表单签名）——这里立即解除，
   // 早于所有功能模块，任何设备都不会出现输入框不可用的情况
   (function () { var _ci = document.getElementById('chat-input'); if (_ci) _ci.readOnly = false; })();
-window.__jsErrors = window.__jsErrors || []; window.__mochiLoaded = window.__mochiLoaded || []; window.__mochiErrLoaded = window.__mochiErrLoaded || []; window.__mochiBootAt = Date.now(); window.__mochiJsFiles = ["device.js","idb.js","contacts.js","applock.js","card-lock.js","dcp-master.js","media-pool.js","storage-slim.js","perf-check.js","energy-check.js","flash-check.js","img-compress.js","img-ingest.js","clock.js","tabs.js","desktop-slider.js","quote-cards.js","personalize.js","chat.js","group-chat.js","chatcard.js","chat-settings.js","reply-settings.js","fav-settings.js","default-cards-data.js","dict-ext-data.js","default-cards.js","quote-spell.js","dream-free.js","mood-followup-data.js","mood-reply-cards.js","ta-mood-data.js","ta-mood.js","music-player.js","calendar.js","divination.js","avatar-lib.js","ta-ask.js","ck-question.js","incoming-requests.js","ta-invite.js","bg-keep.js","records.js","call.js","mail.js","feed.js","loc-lib.js","p2-features.js","gift-shop.js","memo-app.js","memo-arc.js","my-arc.js","period.js","accounting.js","garden.js","room.js","drift-bottle.js","decision.js","group-decision.js","pong.js","snake-game.js","breakout.js","connect-four.js","coop-mine.js","fishing.js","memory-game.js","gomoku.js","linkup.js","match3.js","auction.js","arcade.js","mood-diary.js","sfx.js","fullscreen.js","data-backup.js","feature-data.js","pwa.js","cjian.js","feature-hub.js","settings-help.js","onboarding.js","page-coach.js","card-audit.js","storage-guide.js","mobile-adapt.js"]; window.__mochiExtFiles = ["idb.js","contacts.js","applock.js","card-lock.js","dcp-master.js","media-pool.js","storage-slim.js","perf-check.js","energy-check.js","flash-check.js","img-compress.js","img-ingest.js","clock.js","tabs.js","desktop-slider.js","quote-cards.js","personalize.js","chat.js","group-chat.js","chatcard.js","chat-settings.js","reply-settings.js","fav-settings.js","default-cards-data.js","dict-ext-data.js","default-cards.js","quote-spell.js","dream-free.js","mood-followup-data.js","mood-reply-cards.js","ta-mood-data.js","ta-mood.js","music-player.js","calendar.js","divination.js","avatar-lib.js","ta-ask.js","ck-question.js","incoming-requests.js","ta-invite.js","bg-keep.js","records.js","call.js","mail.js","feed.js","loc-lib.js","p2-features.js","gift-shop.js","memo-app.js","memo-arc.js","my-arc.js","period.js","accounting.js","garden.js","room.js","drift-bottle.js","decision.js","group-decision.js","pong.js","snake-game.js","breakout.js","connect-four.js","coop-mine.js","fishing.js","memory-game.js","gomoku.js","linkup.js","match3.js","auction.js","arcade.js","mood-diary.js","sfx.js","fullscreen.js","data-backup.js","feature-data.js","cjian.js","feature-hub.js","settings-help.js","onboarding.js","page-coach.js","card-audit.js","storage-guide.js","mobile-adapt.js"];
+window.__jsErrors = window.__jsErrors || []; window.__mochiLoaded = window.__mochiLoaded || []; window.__mochiErrLoaded = window.__mochiErrLoaded || []; window.__mochiBootAt = Date.now(); window.__mochiJsFiles = ["device.js","idb.js","contacts.js","applock.js","card-lock.js","dcp-master.js","media-pool.js","storage-slim.js","perf-check.js","energy-check.js","flash-check.js","img-compress.js","img-ingest.js","clock.js","tabs.js","desktop-slider.js","quote-cards.js","personalize.js","chat.js","group-chat.js","chatcard.js","chat-settings.js","reply-settings.js","fav-settings.js","default-cards-data.js","dict-ext-data.js","default-cards.js","quote-spell.js","dream-free.js","mood-followup-data.js","mood-reply-cards.js","ta-mood-data.js","ta-mood.js","music-player.js","calendar.js","divination.js","avatar-lib.js","ta-ask.js","ck-question.js","incoming-requests.js","ta-invite.js","bg-keep.js","records.js","call.js","mail.js","feed.js","loc-lib.js","p2-features.js","gift-shop.js","memo-app.js","memo-arc.js","my-arc.js","period.js","accounting.js","garden.js","room.js","drift-bottle.js","decision.js","group-decision.js","mood-diary.js","sfx.js","fullscreen.js","data-backup.js","feature-data.js","pwa.js","cjian.js","feature-hub.js","settings-help.js","onboarding.js","page-coach.js","card-audit.js","storage-guide.js","mobile-adapt.js"]; window.__mochiExtFiles = ["idb.js","contacts.js","applock.js","card-lock.js","dcp-master.js","media-pool.js","storage-slim.js","perf-check.js","energy-check.js","flash-check.js","img-compress.js","img-ingest.js","clock.js","tabs.js","desktop-slider.js","quote-cards.js","personalize.js","chat.js","group-chat.js","chatcard.js","chat-settings.js","reply-settings.js","fav-settings.js","default-cards-data.js","dict-ext-data.js","default-cards.js","quote-spell.js","dream-free.js","mood-followup-data.js","mood-reply-cards.js","ta-mood-data.js","ta-mood.js","music-player.js","calendar.js","divination.js","avatar-lib.js","ta-ask.js","ck-question.js","incoming-requests.js","ta-invite.js","bg-keep.js","records.js","call.js","mail.js","feed.js","loc-lib.js","p2-features.js","gift-shop.js","memo-app.js","memo-arc.js","my-arc.js","period.js","accounting.js","garden.js","room.js","drift-bottle.js","decision.js","group-decision.js","mood-diary.js","sfx.js","fullscreen.js","data-backup.js","feature-data.js","cjian.js","feature-hub.js","settings-help.js","onboarding.js","page-coach.js","card-audit.js","storage-guide.js","mobile-adapt.js"];
 (function () { try {
 (function () {
 try { window.__jsErrors = window.__jsErrors || []; } catch (e0) {}
@@ -22848,18 +22233,6 @@ window.__mochiBootRetry = function () { try { location.reload(); } catch (e) {} 
 <script defer src="js/drift-bottle.js" onerror="window.__mochiExtFail=(window.__mochiExtFail||[]).concat('drift-bottle.js')"></script>
 <script defer src="js/decision.js" onerror="window.__mochiExtFail=(window.__mochiExtFail||[]).concat('decision.js')"></script>
 <script defer src="js/group-decision.js" onerror="window.__mochiExtFail=(window.__mochiExtFail||[]).concat('group-decision.js')"></script>
-<script defer src="js/pong.js" onerror="window.__mochiExtFail=(window.__mochiExtFail||[]).concat('pong.js')"></script>
-<script defer src="js/snake-game.js" onerror="window.__mochiExtFail=(window.__mochiExtFail||[]).concat('snake-game.js')"></script>
-<script defer src="js/breakout.js" onerror="window.__mochiExtFail=(window.__mochiExtFail||[]).concat('breakout.js')"></script>
-<script defer src="js/connect-four.js" onerror="window.__mochiExtFail=(window.__mochiExtFail||[]).concat('connect-four.js')"></script>
-<script defer src="js/coop-mine.js" onerror="window.__mochiExtFail=(window.__mochiExtFail||[]).concat('coop-mine.js')"></script>
-<script defer src="js/fishing.js" onerror="window.__mochiExtFail=(window.__mochiExtFail||[]).concat('fishing.js')"></script>
-<script defer src="js/memory-game.js" onerror="window.__mochiExtFail=(window.__mochiExtFail||[]).concat('memory-game.js')"></script>
-<script defer src="js/gomoku.js" onerror="window.__mochiExtFail=(window.__mochiExtFail||[]).concat('gomoku.js')"></script>
-<script defer src="js/linkup.js" onerror="window.__mochiExtFail=(window.__mochiExtFail||[]).concat('linkup.js')"></script>
-<script defer src="js/match3.js" onerror="window.__mochiExtFail=(window.__mochiExtFail||[]).concat('match3.js')"></script>
-<script defer src="js/auction.js" onerror="window.__mochiExtFail=(window.__mochiExtFail||[]).concat('auction.js')"></script>
-<script defer src="js/arcade.js" onerror="window.__mochiExtFail=(window.__mochiExtFail||[]).concat('arcade.js')"></script>
 <script defer src="js/mood-diary.js" onerror="window.__mochiExtFail=(window.__mochiExtFail||[]).concat('mood-diary.js')"></script>
 <script defer src="js/sfx.js" onerror="window.__mochiExtFail=(window.__mochiExtFail||[]).concat('sfx.js')"></script>
 <script defer src="js/fullscreen.js" onerror="window.__mochiExtFail=(window.__mochiExtFail||[]).concat('fullscreen.js')"></script>

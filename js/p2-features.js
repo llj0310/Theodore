@@ -353,32 +353,7 @@ msgs.filter(m => m && m.special === 'askcoin').map(m => ({
 main: '+¥' + (Number(m.askFen || 0) / 100).toFixed(2),
 sub: fmtMDHM(m.askTs || m.ts)
 })),
-escH(name) + ' 还没有向 Theodore 申请过', 'askcoin') +
-(function () {
-const GAME_SPECIAL = { brick: '双人打砖块', pong: '乒乓', snake: '贪吃蛇', memory: '记忆翻牌', rps: '猜拳', c4: '四子棋', ms: '合作扫雷' };
-const GAME_KIND = { rps: '猜拳', pong: 'Pong', snake: '双人贪吃蛇', gomoku: '五子棋', linkup: '连连看', match3: '消消乐', auction: '心意币拍卖会' };   // TA 主动邀请（cuddle 贴贴不算游戏）
-const GAME_NAME_RE = /^(四子棋|合作扫雷|记忆翻牌|双人打砖块|Pong)/;
-const rows = [];
-const push = (m, mainTxt, ico) => {
-if (!m) return;
-rows.push({ main: (ico || '🎮') + ' ' + escH(mainTxt), sub: fmtMDHM(m.ts || m.rpTs), ts: m.ts || m.rpTs || 0 });
-};
-msgs.forEach(m => {
-if (!m) return;
-if (m.special && GAME_SPECIAL[m.special]) push(m, GAME_SPECIAL[m.special] + ' · ' + (m.text || ''), '🎮');
-else if (m.gInv && GAME_KIND[m.gInv]) push(m, name + ' 邀请玩 ' + GAME_KIND[m.gInv], '📩');
-});
-msgs.forEach(m => {
-if (!m || !m.text || !GAME_NAME_RE.test(m.text)) return;
-if (m.special && GAME_SPECIAL[m.special]) return;
-if (m.gInv) return;
-push(m, m.text, '🎮');
-});
-const seen = new Set();
-const uniq = rows.filter(r => { const k = r.main + '|' + r.sub; if (seen.has(k)) return false; seen.add(k); return true; });
-uniq.sort((a, b) => (a.ts || 0) - (b.ts || 0));
-return statsFoldSection('🎮', '小游戏记录', '条', uniq, '还没有小游戏记录（更多功能 → 小游戏，和 TA 玩一局试试）', 'games');
-})();
+escH(name) + ' 还没有向 Theodore 申请过', 'askcoin');
 }
 }
 const exprEl = document.getElementById('st-expr-content');

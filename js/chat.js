@@ -6757,7 +6757,7 @@ if ((mask && !mask.hidden) || !window.openModal) { onAccept(); return; }
 window.openModal(title, '', (v) => {
 if (v === '1') onAccept();
 else if (typeof onDecline === 'function') onDecline();
-else { const _dl = presetReplyPick(declineGroup || '游戏邀请·婉拒', declinePool || INVITE_DECLINE); if (_dl) addOut(_dl); }
+else { const _dl = presetReplyPick(declineGroup || '贴贴·婉拒', declinePool || INVITE_DECLINE); if (_dl) addOut(_dl); }
 }, {
 noInput: true,
 lock: true,
@@ -6873,32 +6873,12 @@ try { if (navigator.vibrate) navigator.vibrate([30, 60, 90]); } catch (e) {}
 try { const _cr = presetReplyPick('贴贴·回应', CUDDLE_REPLIES); if (_cr) addInTyped(name + ' ' + _cr); } catch (e) {}
 return;
 }
-if (kind === 'rps') { if (window.openRpsPanel) window.openRpsPanel(); return; }
-if (kind === 'pong') {
-const ids = ['poke-card', 'emoji-panel', 'chat-ask-panel', 'chat-search', 'chat-divine-panel', 'chat-decision-panel', 'chat-rps-panel', 'chat-rp-panel', 'chat-call-panel'];
-ids.forEach(id => { const el = document.getElementById(id); if (el) el.hidden = true; });
-if (window.closeAvlib) window.closeAvlib();
-if (window.openPongPanel) window.openPongPanel();
-return;
-}
-if (kind === 'snake') { if (window.openSnakePanel) window.openSnakePanel(); return; }
-if (kind === 'gomoku') { if (window.openGomokuPanel) window.openGomokuPanel(); return; }
-if (kind === 'linkup') { if (window.openLinkupPanel) window.openLinkupPanel(); return; }
-if (kind === 'match3') { if (window.openMatch3Panel) window.openMatch3Panel(); return; }
-if (kind === 'auction') { if (window.openAuctionPanel) window.openAuctionPanel(); return; }
 }
 const INVITE_KIND_META = {
-rps: { title: '猜拳邀请' },
-pong: { title: '游戏邀请' },
-snake: { title: '游戏邀请' },
-gomoku: { title: '游戏邀请' },
-linkup: { title: '游戏邀请' },
-match3: { title: '游戏邀请' },
-auction: { title: '游戏邀请' },
 cuddle: { title: '贴贴邀请' }
 };
 function sendTaInvite(inv, name) {
-const meta = INVITE_KIND_META[inv && inv.kind] || INVITE_KIND_META.rps;
+const meta = INVITE_KIND_META[inv && inv.kind] || INVITE_KIND_META.cuddle;
 addIn(name + ' ' + (inv.text || ''), { special: 'poke', initiative: true, gInv: inv.kind });
 showTyping();
 setTimeout(() => {
@@ -6911,10 +6891,10 @@ return;
 openInviteConfirm(name + ' 的' + meta.title, name + ' ' + (inv.text || ''), () => {
 if (_cuddleInv && window.chatAddSystem) window.chatAddSystem('你接受了 ' + name + ' 的贴贴邀请');
 openInvitePanelFor(inv.kind, name);
-}, _cuddleInv ? CUDDLE_DECLINE : null, _cuddleInv ? '贴贴·婉拒' : '游戏邀请·婉拒', _cuddleInv ? () => {
+}, CUDDLE_DECLINE, '贴贴·婉拒', () => {
 if (window.chatAddSystem) window.chatAddSystem('你拒绝了 ' + name + ' 的贴贴邀请');
 const _cl = presetReplyPick('贴贴·婉拒', CUDDLE_DECLINE); if (_cl) addOut(_cl);
-} : null);
+});
 }, randInt(700, 1400));
 }
 window.sendTaInvite = sendTaInvite;
@@ -6924,18 +6904,6 @@ const name = chatPartnerName();
 let inv = null;
 if (window.taInviteDraw) {
 inv = window.taInviteDraw(c);
-} else {
-if (cfgn(c, 'ai-rps-en', 1) === 1 && hit(cfgn(c, 'ai-rps-prob', 8))) inv = { kind: 'rps', text: '想和你猜拳，来一局？' };
-else if (cfgn(c, 'ai-game-en', 1) === 1 && hit(cfgn(c, 'ai-game-prob', 5))) { // #301：邀请池扩到六款（原 pong/snake 二选一）
-const GINV_POOL = [
-{ kind: 'pong', text: '想和你玩一局 Pong，来吗？' },
-{ kind: 'snake', text: '想和你玩双人贪吃蛇，来吗？' },
-{ kind: 'gomoku', text: '想和你玩一局五子棋，来吗？' },
-{ kind: 'linkup', text: '来玩连连看嘛，一起清完整张棋盘' },
-{ kind: 'match3', text: '一起玩消消乐呀，冲个目标分' },
-{ kind: 'auction', text: '拍卖会上新啦，来跟我抢拍品呀' }
-];
-inv = GINV_POOL[Math.floor(Math.random() * GINV_POOL.length)]; }
 }
 if (!inv || !inv.text) return false;
 sendTaInvite(inv, name);
@@ -7308,7 +7276,7 @@ const moreBtn = document.getElementById('chat-more-btn');
 if (moreBtn && morePanel) {
 const moreGridFun = document.getElementById('more-grid-fun');
 const moreGridAsk = document.getElementById('more-grid-ask');
-const MORE_CATS = ['chat', 'game', 'tool', 'ask'];
+const MORE_CATS = ['chat', 'tool', 'ask'];
 let moreGroupMode = false;
 const GROUP_MORE_ITEM_IDS = new Set(['more-decide', 'more-gdecide', 'more-search', 'more-divine']);
 function applyMoreCat(cat, group) {
@@ -7801,99 +7769,6 @@ if (morePoke) {
 morePoke.addEventListener('click', (e) => {
 e.stopPropagation();
 openPokeCard();
-});
-}
-const rpsPanel = document.getElementById('chat-rps-panel');
-const rpsCloseBtn = document.getElementById('chat-rps-close');
-const rpsFsBtn = document.getElementById('rps-fs');
-let rpsIsFs = false;
-function rpsToggleFs() {
-if (!rpsPanel) return;
-rpsIsFs = !rpsIsFs;
-rpsPanel.classList.toggle('game-fs', rpsIsFs);
-if (rpsFsBtn) rpsFsBtn.textContent = rpsIsFs ? '⤢' : '⛶';
-}
-if (rpsFsBtn) rpsFsBtn.addEventListener('click', (e) => { e.stopPropagation(); rpsToggleFs(); });
-const rpsScoreEl = document.getElementById('rps-score');
-const rpsHintEl = document.getElementById('rps-hint');
-const rpsNameEl = document.getElementById('rps-partner-name');
-function rpsReadScore() {
-try { return JSON.parse(store.get('rps-score') || '{"w":0,"l":0,"d":0}'); }
-catch (e) { return { w: 0, l: 0, d: 0 }; }
-}
-function rpsWriteScore(s) { store.set('rps-score', JSON.stringify(s)); }
-function rpsRenderScore() {
-if (!rpsScoreEl) return;
-const s = rpsReadScore();
-rpsScoreEl.textContent = '胜 ' + s.w + ' · 负 ' + s.l + ' · 平 ' + s.d;
-}
-function openRpsPanel() {
-if (!rpsPanel) return;
-try { if (rpsIsFs) rpsToggleFs(); } catch (e) {}
-const pc = document.getElementById('poke-card'); if (pc) pc.hidden = true;
-const ep = document.getElementById('emoji-panel'); if (ep) ep.hidden = true;
-const askP = document.getElementById('chat-ask-panel'); if (askP) closeChatAskPanel();
-const cs = document.getElementById('chat-search'); if (cs) cs.hidden = true;
-const dv = document.getElementById('chat-divine-panel'); if (dv) dv.hidden = true;
-const dp = document.getElementById('chat-decision-panel'); if (dp) dp.hidden = true;
-if (window.closeAvlib) window.closeAvlib();
-if (morePanel) morePanel.hidden = true;
-if (rpsNameEl) rpsNameEl.textContent = chatPartnerName();
-if (rpsHintEl) rpsHintEl.textContent = '选择你要出的拳';
-rpsRenderScore();
-rpsPanel.hidden = false;
-}
-function closeRpsPanel() { if (rpsPanel) rpsPanel.hidden = true; }
-window.openRpsPanel = openRpsPanel;
-window.closeRpsPanel = closeRpsPanel;
-function rpsJudge(a, b) {
-if (a === b) return 0;
-if ((a === 'rock' && b === 'scissors') ||
-(a === 'scissors' && b === 'paper') ||
-(a === 'paper' && b === 'rock')) return 1;
-return -1;
-}
-function sendRps(mine) {
-closeRpsPanel();
-const mineName = { rock: '石头', scissors: '剪刀', paper: '布' }[mine] || '';
-addRec({ side: 'in', special: 'poke', text: '我出了 ' + mineName + '，等 TA 出拳…', nightAllow: true, rateAllow: true });
-showTyping();
-setTimeout(() => {
-hideTyping();
-const ta = ['rock', 'scissors', 'paper'][Math.floor(Math.random() * 3)];
-const judge = rpsJudge(mine, ta);
-const s = rpsReadScore();
-if (judge > 0) s.w++; else if (judge < 0) s.l++; else s.d++;
-rpsWriteScore(s);
-addRec({ side: 'in', special: 'rps', rpsMine: mine, rpsTa: ta, rpsResult: judge, nightAllow: true, rateAllow: true });
-try {
-const rpsWinFen = Math.random() < 0.3 ? 1314 : 520;
-const real = rpGameCoinGrant('rps', judge > 0 ? rpsWinFen : judge < 0 ? 520 : 130, 2600);
-if (real > 0) {
-const w = rpWalletGet();
-w.myBalance += real; w.systemBalance += real;
-rpWalletSet(w);
-try { if (window.giftCoinLedgerAdd) window.giftCoinLedgerAdd('earn', real, real, '石头剪刀布'); } catch (e2) {}
-setTimeout(() => addIn('🪙 双方心意币各 +¥' + (real / 100).toFixed(2), { special: 'poke', nightAllow: true, rateAllow: true }), randInt(800, 1600));
-}
-} catch (e) {}
-if (window.logFish) window.logFish();
-}, randInt(900, 1600));
-}
-const moreRps = document.getElementById('more-rps');
-if (moreRps) {
-moreRps.addEventListener('click', (e) => { e.stopPropagation(); openRpsPanel(); });
-}
-if (rpsCloseBtn) {
-rpsCloseBtn.addEventListener('click', (e) => { e.stopPropagation(); closeRpsPanel(); });
-}
-if (rpsPanel) {
-rpsPanel.querySelectorAll('.rps-choice').forEach(btn => {
-btn.addEventListener('click', (e) => {
-e.stopPropagation();
-const v = btn.dataset.rps;
-if (v) sendRps(v);
-});
 });
 }
 const rpPanel = document.getElementById('chat-rp-panel');
@@ -9292,7 +9167,7 @@ if (window.renderAskRecords) window.renderAskRecords(); // #625 汇总页同口�
 toast('邀请记录已清空');
 }, { noInput: true });
 });
-const MY_INVITE_PRESETS = ['想和你猜拳，来一局？', '想和你玩一局 Pong，来吗？', '想和你玩双人贪吃蛇，来吗？', '想和你一起听歌'];
+const MY_INVITE_PRESETS = ['想和你一起听歌'];
 let myInviteDirty = false;
 let myInviteCurGroup = '__preset';
 let myInviteGroups = null;
@@ -9676,7 +9551,6 @@ close();
 [['chat-divine-panel', () => { if (chatDivinePanel) chatDivinePanel.hidden = true; }],
 ['chat-ask-panel', () => closeChatAskPanel()],
 ['chat-search', () => closeChatSearch()],
-['chat-rps-panel', () => closeRpsPanel()],
 ['chat-rp-panel', () => closeRpPanel()]].forEach((s) => {
 window.mochiSheetOutsideClose(document.getElementById(s[0]), s[1]);
 });
@@ -9915,84 +9789,6 @@ if (morePanel) morePanel.hidden = true;
 openChatCall();
 });
 }
-const morePong = document.getElementById('more-pong');
-if (morePong) {
-morePong.addEventListener('click', (e) => {
-e.stopPropagation();
-if (morePanel) morePanel.hidden = true;
-const pc = document.getElementById('poke-card'); if (pc) pc.hidden = true;
-const ep = document.getElementById('emoji-panel'); if (ep) ep.hidden = true;
-const askP = document.getElementById('chat-ask-panel'); if (askP) closeChatAskPanel();
-const cs = document.getElementById('chat-search'); if (cs) cs.hidden = true;
-const dv = document.getElementById('chat-divine-panel'); if (dv) dv.hidden = true;
-const dp = document.getElementById('chat-decision-panel'); if (dp) dp.hidden = true;
-const rpsP = document.getElementById('chat-rps-panel'); if (rpsP) rpsP.hidden = true;
-const rpP = document.getElementById('chat-rp-panel'); if (rpP) rpP.hidden = true;
-const callP = document.getElementById('chat-call-panel'); if (callP) callP.hidden = true;
-if (window.closeAvlib) window.closeAvlib();
-if (window.openPongPanel) window.openPongPanel();
-});
-}
-const moreSnake = document.getElementById('more-snake');
-if (moreSnake) {
-moreSnake.addEventListener('click', (e) => {
-e.stopPropagation();
-if (morePanel) morePanel.hidden = true;
-if (window.openSnakePanel) window.openSnakePanel();
-});
-}
-const moreFish = document.getElementById('more-fish');
-if (moreFish) {
-moreFish.addEventListener('click', (e) => {
-e.stopPropagation();
-if (morePanel) morePanel.hidden = true;
-if (window.openFishPanel) window.openFishPanel();
-});
-}
-var moreBrick = document.getElementById('more-brick');
-if (moreBrick) {
-moreBrick.addEventListener('click', function (e) {
-e.stopPropagation();
-if (morePanel) morePanel.hidden = true;
-var pc = document.getElementById('poke-card'); if (pc) pc.hidden = true;
-var ep = document.getElementById('emoji-panel'); if (ep) ep.hidden = true;
-var askP = document.getElementById('chat-ask-panel'); if (askP) closeChatAskPanel();
-var cs = document.getElementById('chat-search'); if (cs) cs.hidden = true;
-var dv = document.getElementById('chat-divine-panel'); if (dv) dv.hidden = true;
-var dp = document.getElementById('chat-decision-panel'); if (dp) dp.hidden = true;
-var rpsP = document.getElementById('chat-rps-panel'); if (rpsP) rpsP.hidden = true;
-var rpP = document.getElementById('chat-rp-panel'); if (rpP) rpP.hidden = true;
-var callP = document.getElementById('chat-call-panel'); if (callP) callP.hidden = true;
-var snkP = document.getElementById('chat-snake-panel'); if (snkP) snkP.hidden = true;
-if (window.closePongPanel) window.closePongPanel();
-if (window.openBrickPanel) window.openBrickPanel();
-});
-}
-window.sendSnakeResult = function (d) {
-if (!d) return;
-addRec({ side: 'in', special: 'snake', nightAllow: true, rateAllow: true, snkResult: d.result, snkPLen: d.pLen, snkOLen: d.oLen, snkPFood: d.pFood, snkOFood: d.oFood, snkPScore: d.pScore, snkOScore: d.oScore, snkTime: d.time });
-try {
-const snkWinFen = Math.random() < 0.2 ? 5200 : 1314;
-const snkMult = (window.arcadeMult && window.arcadeMult('snake')) || 1;
-const real = rpGameCoinGrant('snake', (d.result === 'draw' ? 520 : snkWinFen) * snkMult, 10400);
-if (real > 0) {
-const w = rpWalletGet();
-w.myBalance += real; w.systemBalance += real;
-rpWalletSet(w);
-try { if (window.giftCoinLedgerAdd) window.giftCoinLedgerAdd('earn', real, real, '贪吃蛇'); } catch (e2) {}
-setTimeout(() => addIn('🪙 双方心意币各 +¥' + (real / 100).toFixed(2), { special: 'poke', nightAllow: true, rateAllow: true }), randInt(800, 1600));
-}
-} catch (e) {}
-if (window.logFish) window.logFish();
-showTyping();
-setTimeout(() => {
-hideTyping();
-const grp = d.result === 'win' ? '游戏失败·回应' : d.result === 'lose' ? '游戏胜利·回应' : '游戏平局·回应';
-const pool = window.getInteractPool ? window.getInteractPool(grp, ['再来一局？']) : ['再来一局？'];
-const say = pool.length ? pool[Math.floor(Math.random() * pool.length)] : ''; // #1515 整组停用＝静默（不再回落未入库兜底句）
-if (say) addRec({ side: 'in', text: say, nightAllow: true, rateAllow: true });
-}, randInt(900, 1600));
-};
 if (chatCallClose) chatCallClose.addEventListener('click', (e) => { e.stopPropagation(); closeChatCall(); });
 if (callPanelDial) callPanelDial.addEventListener('click', (e) => {
 e.stopPropagation();

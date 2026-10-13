@@ -89,7 +89,7 @@ const name = dispName();
 const myName = store.get('lbl-user') || '我';
 const esc = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 if (!list.length) {
-el.innerHTML = recEmpty('<div class="ta-empty">' + (kind === 'ask' ? '暂无申请记录（可点心意币余额行向 Theodore 申请）' : '暂无赚钱记录（玩游戏、种花、钓鱼都能赚心意币）') + '</div>');
+el.innerHTML = recEmpty('<div class="ta-empty">' + (kind === 'ask' ? '暂无申请记录（可点心意币余额行向 Theodore 申请）' : '暂无赚钱记录（种花收成、漂流瓶等都能赚心意币）') + '</div>');
 return;
 }
 const yuan = (fen) => (fen / 100).toFixed(2);

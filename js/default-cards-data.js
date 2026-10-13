@@ -75,6 +75,5 @@ window.DEFAULT_CARD_DATA.read = [
 "你怎么想？"
 ]]
 ];
-
 if (window.__mochiLoaded) window.__mochiLoaded.push("default-cards-data.js");
 } catch (__e) { if (window.__mochiErrLoaded) window.__mochiErrLoaded.push("default-cards-data.js"); try { console.error("[JS] default-cards-data.js", __e && __e.message || __e); } catch (x) {} if (window.__jsErrors) window.__jsErrors.push("[default-cards-data.js] " + String(__e && __e.message || __e)); } })();

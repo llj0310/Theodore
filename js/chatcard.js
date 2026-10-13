@@ -1623,10 +1623,24 @@ const row = document.createElement('div');
 row.className = 'mg-row';
 row.dataset.gidx = String(gi);
 const builtin = (BUILTIN[cur] || []).some(b => b[0] === gname);
+const gOff = isGroupOff(ccOffScope(), cur, gname);
 row.innerHTML = '<button class="mg-handle" aria-label="拖动排序">' + handleSvg + '</button>' +
 '<span class="mg-name">' + esc(gname) + '</span><span class="mg-count">' + arr.length + ' 张</span>' +
+'<button type="button" class="mg-toggle' + (gOff ? ' off' : '') + '" title="' + (gOff ? '点击启用该分组' : '点击停用该分组') + '">' + (gOff ? '已停用' : '启用中') + '</button>' +
 (builtin ? '<span class="mg-tag">内置</span>' : '<button class="mg-rn" aria-label="重命名">' + editSvg + '</button><button class="mg-del">✕</button>');
 attachGroupRowDrag(row, gi);
+const mgTgl = row.querySelector('.mg-toggle');
+if (mgTgl) {
+mgTgl.addEventListener('click', (e) => {
+e.stopPropagation();
+const nowOff = toggleGroupOff(cur, gname);
+mgTgl.classList.toggle('off', nowOff);
+mgTgl.textContent = nowOff ? '已停用' : '启用中';
+mgTgl.title = nowOff ? '点击启用该分组' : '点击停用该分组';
+refreshGroupHeaderUI(gname);
+toast(nowOff ? '已停用分组「' + gname + '」：该分组字卡不再被联系人使用' : '已启用分组「' + gname + '」：该分组字卡恢复使用');
+});
+}
 if (!builtin) {
 const rnBtn = row.querySelector('.mg-rn');
 if (rnBtn) rnBtn.addEventListener('click', (e) => {
@@ -1688,6 +1702,77 @@ listEl.appendChild(row);
 }
 mask.hidden = false;
 renderMgList();
+}
+function openCcProb() {
+let mask = document.getElementById('cc-prob-mask');
+if (!mask) {
+mask = document.createElement('div');
+mask.id = 'cc-prob-mask';
+mask.className = 'mg-mask';
+const PROB_DEFS = [
+['kaomoji-prob', '颜文字'],
+['emoji-prob', 'Emoji'],
+['sticker-prob', '表情包'],
+['image-prob', '图片'],
+['voice-prob', '语音']
+];
+let html = '<div class="mg-panel">' +
+'<div class="mg-head"><span>类型字卡出现概率</span><button class="mg-close">✕</button></div>' +
+'<div class="mg-prob" style="border:none;background:none;padding:0">';
+PROB_DEFS.forEach(function (d) {
+html += '<div class="mg-prob-row"><span class="mg-prob-label">' + d[1] + '字卡</span>' +
+'<div class="stepper" data-k="' + d[0] + '" data-min="0" data-max="100" data-step="5">' +
+'<button class="stp-min">−</button><input class="stp-val" readonly><button class="stp-max">+</button></div></div>';
+});
+html += '<div class="mg-prob-tip">回复 TA 时，TA 会按这些概率附带对应类型的字卡，0 表示基本不带该类字卡。数值与「回复设置 → 字卡与概率」同步。</div></div></div>';
+mask.innerHTML = html;
+document.body.appendChild(mask);
+mask.querySelector('.mg-close').addEventListener('click', function () { mask.hidden = true; });
+mask.addEventListener('click', function (e) { if (e.target === mask) mask.hidden = true; });
+bindMgProbSteppers(mask);
+}
+syncMgProbUI(mask);
+mask.hidden = false;
+}
+function bindMgProbSteppers(mask) {
+mask.querySelectorAll('.mg-prob .stepper').forEach(function (st) {
+const k = st.dataset.k;
+if (!k) return;
+const min = parseInt(st.getAttribute('data-min'), 10) || 0;
+const max = parseInt(st.getAttribute('data-max'), 10) || 100;
+const step = parseFloat(st.dataset.step) || 1;
+const val = st.querySelector('.stp-val');
+if (!val) return;
+const labelEl = st.closest('.mg-prob-row') ? st.closest('.mg-prob-row').querySelector('.mg-prob-label') : null;
+const label = labelEl ? labelEl.textContent : k;
+const fmt = function (v) { return step < 1 ? v.toFixed(2) : String(Math.round(v)); };
+const set = function (v) {
+if (!isFinite(v)) v = min;
+v = Math.min(max, Math.max(min, v));
+if (step < 1) v = Math.round(v / step) * step; else v = Math.round(v);
+val.value = fmt(v);
+try { window.saveReplyCfg(k, val.value); } catch (e) {}
+try { toast(label + '出现概率：' + val.value + '%'); } catch (e) {}
+};
+st.querySelector('.stp-min').addEventListener('click', function () { let cur = parseFloat(val.value); if (!isFinite(cur)) cur = min; set(cur - step); });
+st.querySelector('.stp-max').addEventListener('click', function () { let cur = parseFloat(val.value); if (!isFinite(cur)) cur = min; set(cur + step); });
+});
+}
+function syncMgProbUI(mask) {
+let cfg = {};
+try { cfg = window.replyCfg ? window.replyCfg() : {}; } catch (e) {}
+mask.querySelectorAll('.mg-prob .stepper').forEach(function (st) {
+const k = st.dataset.k;
+const val = st.querySelector('.stp-val');
+if (!k || !val) return;
+let v = cfg[k];
+if (typeof v !== 'number' || isNaN(v)) v = 0;
+val.value = String(Math.round(v));
+});
+}
+const tpBtn = document.getElementById('cc-type-prob');
+if (tpBtn) {
+tpBtn.addEventListener('click', openCcProb);
 }
 let manageMode = false;
 const selected = new Set(); // key: 分组名 + \u0001 + 数组索引

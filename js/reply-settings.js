@@ -32,7 +32,6 @@ const DEFAULTS = {
 'as-badge': 1,
 'as-badge-star': 0, 'as-badge-moon': 0, 'as-badge-spark': 0, 'as-badge-paw': 0,
 'as-badge-rand': 1,
-'ai-rps-en': 1, 'ai-rps-prob': 8, 'ai-game-en': 1, 'ai-game-prob': 5,
 'ai-cuddle-en': 1, 'ai-cuddle-prob': 5,
 'ai-cc-en': 1, 'ai-cc-prob': 4,
 'rp-thx-en': 1, 'rp-thx-prob': 60, 'rp-thx-mode': 2,
@@ -300,7 +299,7 @@ val.value = str;
 val.setAttribute('value', str);
 }
 });
-['py-en', 'py-punct-en', 'as-en', 'dnd-en', 'as-badge', 'as-badge-heart', 'as-badge-star', 'as-badge-moon', 'as-badge-spark', 'as-badge-paw', 'as-badge-rand', 'ml-kaomoji-en', 'ml-emoji-en', 'ml-sticker-en', 'cs-normal', 'cs-trigger-name', 'cs-trigger-bar', 'gc-cs-normal', 'gc-cs-trigger-name', 'gc-cs-trigger-bar', 'gc-py-en', 'ai-rps-en', 'ai-game-en', 'ai-cuddle-en', 'ai-cc-en', 'ckq-en', 'call-resume', 'call-no-hangup', 'ml-write-en', 'ml-fish-week-en', 'ml-punct-en', 'fd-post-en', 'fd-punct-en', 'fd-kaomoji-en', 'fd-emoji-en', 'fd-sticker-en', 'fd-image-en', 'qs-en', 'qs-cc', 'qs-one', 'qs-multi', 'qs-noLimit', 'mjf-en', 'mjf-src-cc', 'mjf-src-def', 'mjf-src-dict', 'mjf-mix', 'mjf-punct', 'rc-en', 'rl-en', 'fish-en', 'work-en', 'fish-grab-en', 'rp-thx-en', 'turn-en', 'gc-turn-en'].forEach(k => {
+['py-en', 'py-punct-en', 'as-en', 'dnd-en', 'as-badge', 'as-badge-heart', 'as-badge-star', 'as-badge-moon', 'as-badge-spark', 'as-badge-paw', 'as-badge-rand', 'ml-kaomoji-en', 'ml-emoji-en', 'ml-sticker-en', 'cs-normal', 'cs-trigger-name', 'cs-trigger-bar', 'gc-cs-normal', 'gc-cs-trigger-name', 'gc-cs-trigger-bar', 'gc-py-en', 'ai-cuddle-en', 'ai-cc-en', 'ckq-en', 'call-resume', 'call-no-hangup', 'ml-write-en', 'ml-fish-week-en', 'ml-punct-en', 'fd-post-en', 'fd-punct-en', 'fd-kaomoji-en', 'fd-emoji-en', 'fd-sticker-en', 'fd-image-en', 'qs-en', 'qs-cc', 'qs-one', 'qs-multi', 'qs-noLimit', 'mjf-en', 'mjf-src-cc', 'mjf-src-def', 'mjf-src-dict', 'mjf-mix', 'mjf-punct', 'rc-en', 'rl-en', 'fish-en', 'work-en', 'fish-grab-en', 'rp-thx-en', 'turn-en', 'gc-turn-en'].forEach(k => {
 const el = document.getElementById(k);
 if (el) el.checked = cfg[k] === 1;
 });
@@ -393,7 +392,7 @@ const TOGGLE_NAMES = {
 'ml-kaomoji-en': '信箱颜文字', 'ml-emoji-en': '信箱emoji', 'ml-sticker-en': '信箱表情包',
 'cs-normal': '让对方继续说', 'cs-trigger-name': '昵称触发继续说', 'cs-trigger-bar': '聊天栏继续说按钮',
 'gc-cs-normal': '群聊继续说按正常回复时间', 'gc-cs-trigger-name': '群聊昵称触发继续说', 'gc-cs-trigger-bar': '群聊底部继续说按钮',
-'gc-py-en': '群聊多字卡回复', 'ai-rps-en': '猜拳邀请', 'ai-game-en': '游戏邀请', 'ai-cuddle-en': '贴贴邀请',
+'gc-py-en': '群聊多字卡回复', 'ai-cuddle-en': '贴贴邀请',
 'ai-cc-en': 'TA分享字卡', 'ckq-en': 'TA主动查岗', 'call-resume': '刷新恢复通话', 'call-no-hangup': '禁止联系人挂断',
 'ml-write-en': '联系人主动写信', 'fd-post-en': '联系人主动发朋友圈',
 'ml-punct-en': '信件拼接随机标点', 'fd-punct-en': '朋友圈拼接随机标点',
@@ -428,7 +427,7 @@ d.className = 'cc-toast'; void d.offsetWidth; d.className = 'cc-toast show';
 clearTimeout(d._timer); d._timer = setTimeout(() => { d.className = 'cc-toast'; }, 1800);
 } catch (e) {}
 }
-['py-en', 'py-punct-en', 'as-en', 'dnd-en', 'as-badge', 'ml-kaomoji-en', 'ml-emoji-en', 'ml-sticker-en', 'cs-normal', 'cs-trigger-name', 'cs-trigger-bar', 'gc-cs-normal', 'gc-cs-trigger-name', 'gc-cs-trigger-bar', 'gc-py-en', 'ai-rps-en', 'ai-game-en', 'ai-cuddle-en', 'ai-cc-en', 'ckq-en', 'call-resume', 'call-no-hangup', 'ml-write-en', 'ml-fish-week-en', 'ml-punct-en', 'fd-post-en', 'fd-punct-en', 'fd-kaomoji-en', 'fd-emoji-en', 'fd-sticker-en', 'fd-image-en', 'qs-en', 'qs-cc', 'qs-one', 'qs-multi', 'qs-noLimit', 'mjf-en', 'mjf-src-cc', 'mjf-src-def', 'mjf-src-dict', 'mjf-mix', 'mjf-punct', 'rc-en', 'rl-en', 'fish-en', 'work-en', 'fish-grab-en', 'rp-thx-en', 'turn-en', 'gc-turn-en'].forEach(k => {
+['py-en', 'py-punct-en', 'as-en', 'dnd-en', 'as-badge', 'ml-kaomoji-en', 'ml-emoji-en', 'ml-sticker-en', 'cs-normal', 'cs-trigger-name', 'cs-trigger-bar', 'gc-cs-normal', 'gc-cs-trigger-name', 'gc-cs-trigger-bar', 'gc-py-en', 'ai-cuddle-en', 'ai-cc-en', 'ckq-en', 'call-resume', 'call-no-hangup', 'ml-write-en', 'ml-fish-week-en', 'ml-punct-en', 'fd-post-en', 'fd-punct-en', 'fd-kaomoji-en', 'fd-emoji-en', 'fd-sticker-en', 'fd-image-en', 'qs-en', 'qs-cc', 'qs-one', 'qs-multi', 'qs-noLimit', 'mjf-en', 'mjf-src-cc', 'mjf-src-def', 'mjf-src-dict', 'mjf-mix', 'mjf-punct', 'rc-en', 'rl-en', 'fish-en', 'work-en', 'fish-grab-en', 'rp-thx-en', 'turn-en', 'gc-turn-en'].forEach(k => {
 const el = document.getElementById(k);
 if (el) {
 el.addEventListener('change', () => {
@@ -1024,8 +1023,6 @@ const DCP_ROWS = [
 { k: 'tcu-prob', def: 5, blob: 'ta-curious', name: 'TA的好奇' },
 { k: 'tr-prob', def: 5, blob: 'ta-roast', name: 'TA的吐槽' },
 { k: 'ckq-prob', def: 2, pre: 'reply-', name: 'TA的查岗' },
-{ k: 'ai-rps-prob', def: 8, pre: 'reply-', name: '猜拳邀请' },
-{ k: 'ai-game-prob', def: 5, pre: 'reply-', name: '游戏邀请' },
 { k: 'ai-cuddle-prob', def: 5, pre: 'reply-', name: '贴贴邀请' }
 ];
 const dcpSyncFns = [];
@@ -1131,7 +1128,7 @@ const IC_PILLS = [
 { label: '安静', value: '2' }, { label: '很安静', value: '3' }
 ];
 const IC_DETAIL = '聊天里 TA 主动发的卡与邀请多久来一次，按这一档整体往下调（没有比「原频率」更高的档）。'
-+ '覆盖：五类提问卡（询问 / 小问题 / 好奇 / 吐槽 / 分享你的字卡）、邀请三类（猜拳 / 游戏 / 贴贴）、音乐「一起去听」邀请。'
++ '覆盖：五类提问卡（询问 / 小问题 / 好奇 / 吐槽 / 分享你的字卡）、贴贴邀请、音乐「一起去听」邀请。'
 + '不影响查岗自己的开关 / 概率 / 冷却，也不影响你自己发的卡。'
 + '\n\n· 原频率：全部 ×1，完全保持现在的节奏（默认）；'
 + '\n· 稍安静：概率 ×0.6、提问卡冷却 ×1.5、跨类型间隔 ×1.5；'
@@ -1190,7 +1187,7 @@ group.appendChild(row);
 const sub = document.createElement('div');
 sub.className = 'gs-sub';
 sub.id = 'ic-freq-sub';
-sub.textContent = 'TA 在聊天里主动发的卡与邀请（提问卡五类：询问/小问题/好奇/吐槽/分享你的字卡；邀请三类：猜拳/游戏/贴贴；音乐「一起去听」）整体频率；「原频率」＝完全保持现在的节奏，往右都是调低。各类互动卡的单项概率在【字卡与概率】里逐项调。点右侧档位切换。';
+sub.textContent = 'TA 在聊天里主动发的卡与邀请（提问卡五类：询问/小问题/好奇/吐槽/分享你的字卡；贴贴邀请；音乐「一起去听」）整体频率；「原频率」＝完全保持现在的节奏，往右都是调低。各类互动卡的单项概率在【字卡与概率】里逐项调。点右侧档位切换。';
 group.appendChild(sub);
 panel.appendChild(group);
 rpsHost.insertBefore(panel, rpsTabs.nextSibling);
@@ -1263,7 +1260,7 @@ v = Math.min(max, Math.max(min, v));
 window.saveReplyCfg(k, v);
 }
 });
-['py-en', 'py-punct-en', 'as-en', 'dnd-en', 'as-badge', 'as-badge-heart', 'as-badge-star', 'as-badge-moon', 'as-badge-spark', 'as-badge-paw', 'as-badge-rand', 'ml-kaomoji-en', 'ml-emoji-en', 'ml-sticker-en', 'cs-normal', 'cs-trigger-name', 'cs-trigger-bar', 'gc-cs-normal', 'gc-cs-trigger-name', 'gc-cs-trigger-bar', 'gc-py-en', 'ai-rps-en', 'ai-game-en', 'ai-cuddle-en', 'ai-cc-en', 'ckq-en', 'call-resume', 'call-no-hangup', 'ml-write-en', 'ml-fish-week-en', 'ml-punct-en', 'fd-post-en', 'fd-punct-en', 'fd-kaomoji-en', 'fd-emoji-en', 'fd-sticker-en', 'fd-image-en', 'qs-en', 'qs-cc', 'qs-one', 'qs-multi', 'qs-noLimit', 'mjf-en', 'mjf-src-cc', 'mjf-src-def', 'mjf-src-dict', 'mjf-mix', 'mjf-punct', 'rc-en', 'rl-en', 'fish-en', 'work-en', 'fish-grab-en', 'rp-thx-en', 'turn-en', 'gc-turn-en'].forEach(k => {
+['py-en', 'py-punct-en', 'as-en', 'dnd-en', 'as-badge', 'as-badge-heart', 'as-badge-star', 'as-badge-moon', 'as-badge-spark', 'as-badge-paw', 'as-badge-rand', 'ml-kaomoji-en', 'ml-emoji-en', 'ml-sticker-en', 'cs-normal', 'cs-trigger-name', 'cs-trigger-bar', 'gc-cs-normal', 'gc-cs-trigger-name', 'gc-cs-trigger-bar', 'gc-py-en', 'ai-cuddle-en', 'ai-cc-en', 'ckq-en', 'call-resume', 'call-no-hangup', 'ml-write-en', 'ml-fish-week-en', 'ml-punct-en', 'fd-post-en', 'fd-punct-en', 'fd-kaomoji-en', 'fd-emoji-en', 'fd-sticker-en', 'fd-image-en', 'qs-en', 'qs-cc', 'qs-one', 'qs-multi', 'qs-noLimit', 'mjf-en', 'mjf-src-cc', 'mjf-src-def', 'mjf-src-dict', 'mjf-mix', 'mjf-punct', 'rc-en', 'rl-en', 'fish-en', 'work-en', 'fish-grab-en', 'rp-thx-en', 'turn-en', 'gc-turn-en'].forEach(k => {
 const el = document.getElementById(k);
 if (el) {
 if (replyKeyUnvouched(k)) { if (skipped.indexOf(k) < 0) skipped.push(k); return; } // #1511：同上，读数未确认不落笔
