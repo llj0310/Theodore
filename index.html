@@ -4895,6 +4895,13 @@ background:#e9f2ff; color:#2b7fff; padding:0 10px; flex-shrink:0; font-family:in
 }
 .mg-toggle.off { background:rgba(0,0,0,.07); color:var(--muted); }
 .mg-toggle:active { filter:brightness(.92); }
+.mg-prob-stepper { display:flex; align-items:center; gap:3px; flex-shrink:0; }
+.mg-prob-lab { font-size:11px; color:var(--muted); margin-right:2px; }
+.mg-prob-stepper .stp-min, .mg-prob-stepper .stp-max {
+width:24px; height:24px; border:none; border-radius:8px; background:rgba(0,0,0,.06); color:var(--ink); font-size:15px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;
+}
+.mg-prob-stepper .stp-min:active, .mg-prob-stepper .stp-max:active { background:rgba(0,0,0,.13); }
+.mg-prob-stepper .stp-val { width:36px; height:24px; border:1px solid rgba(0,0,0,.08); border-radius:8px; background:transparent; color:var(--ink); text-align:center; font-size:12px; font-weight:700; }
 .mg-prob { margin-top:12px; padding:12px; border:1px solid rgba(0,0,0,.08); border-radius:12px; background:rgba(0,0,0,.02); }
 .mg-prob-title { font-size:12px; font-weight:700; color:var(--muted); margin-bottom:10px; }
 .mg-prob-row { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; }

@@ -1554,7 +1554,7 @@ const handle = row.querySelector('.mg-handle');
 if (!handle) return;
 handle.addEventListener('pointerdown', (e) => {
 if (e.button !== 0 && e.pointerType === 'mouse') return;
-const listEl = mask.querySelector('.mg-list');
+const listEl = (document.getElementById('cc-mg-mask') || mask).querySelector('.mg-list');
 if (!listEl) return;
 const rect = row.getBoundingClientRect();
 const offsetY = e.clientY - rect.top;
@@ -1612,7 +1612,7 @@ e.preventDefault();
 });
 }
 function renderMgList() {
-const listEl = mask.querySelector('.mg-list');
+const listEl = (document.getElementById('cc-mg-mask') || mask).querySelector('.mg-list');
 const grps = groups[cur] || [];
 if (!grps.length) { listEl.innerHTML = '<div class="mg-empty">暂无分组，点击下方新建</div>'; return; }
 listEl.innerHTML = '';
@@ -1627,6 +1627,7 @@ const gOff = isGroupOff(ccOffScope(), cur, gname);
 row.innerHTML = '<button class="mg-handle" aria-label="拖动排序">' + handleSvg + '</button>' +
 '<span class="mg-name">' + esc(gname) + '</span><span class="mg-count">' + arr.length + ' 张</span>' +
 '<button type="button" class="mg-toggle' + (gOff ? ' off' : '') + '" title="' + (gOff ? '点击启用该分组' : '点击停用该分组') + '">' + (gOff ? '已停用' : '启用中') + '</button>' +
+'<div class="mg-prob-stepper" title="该分组字卡的出现概率（0% 为完全不出现）"><span class="mg-prob-lab">概率</span><button type="button" class="stp-min">−</button><input class="stp-val" readonly><button type="button" class="stp-max">+</button></div>' +
 (builtin ? '<span class="mg-tag">内置</span>' : '<button class="mg-rn" aria-label="重命名">' + editSvg + '</button><button class="mg-del">✕</button>');
 attachGroupRowDrag(row, gi);
 const mgTgl = row.querySelector('.mg-toggle');
@@ -1639,6 +1640,32 @@ mgTgl.textContent = nowOff ? '已停用' : '启用中';
 mgTgl.title = nowOff ? '点击启用该分组' : '点击停用该分组';
 refreshGroupHeaderUI(gname);
 toast(nowOff ? '已停用分组「' + gname + '」：该分组字卡不再被联系人使用' : '已启用分组「' + gname + '」：该分组字卡恢复使用');
+});
+}
+const probStepper = row.querySelector('.mg-prob-stepper');
+if (probStepper) {
+const probMin = probStepper.querySelector('.stp-min');
+const probMax = probStepper.querySelector('.stp-max');
+const probVal = probStepper.querySelector('.stp-val');
+const refProb = function () {
+const p = ccGroupProb(cur, gname);
+probVal.value = String(p);
+probVal.title = p <= 0 ? '概率 0：该分组字卡不会出现' : '出现概率 ' + p + '%（0 为不出现）';
+};
+refProb();
+probMin.addEventListener('click', (e) => {
+e.stopPropagation();
+const p = Math.max(0, ccGroupProb(cur, gname) - 10);
+setCcGroupProb(cur, gname, p);
+refProb();
+toast('分组「' + gname + '」出现概率：' + p + '%' + (p === 0 ? '（该分组字卡不再出现）' : ''));
+});
+probMax.addEventListener('click', (e) => {
+e.stopPropagation();
+const p = Math.min(100, ccGroupProb(cur, gname) + 10);
+setCcGroupProb(cur, gname, p);
+refProb();
+toast('分组「' + gname + '」出现概率：' + p + '%');
 });
 }
 if (!builtin) {
@@ -3384,6 +3411,49 @@ try {
 if (window.hydrateLibScopes) window.hydrateLibScopes(['public', 'own']);
 } catch (e) {}
 }
+// ===== 分组出现概率（主字卡等各类型下每个分组独立概率）=====
+const CC_PROB_KEY = 'cc-groups-prob';
+function ccGroupProbs() {
+try {
+const raw = store.get(CC_PROB_KEY);
+const o = JSON.parse(raw || 'null');
+if (o && typeof o === 'object') return o;
+} catch (e) {}
+return {};
+}
+function ccGroupProb(type, gname) {
+try {
+const o = ccGroupProbs();
+const v = o[type] && o[type][gname];
+if (typeof v === 'number' && isFinite(v)) return Math.min(100, Math.max(0, v));
+} catch (e) {}
+return 100; // 默认 100：未设置 = 该分组全量参与
+}
+function setCcGroupProb(type, gname, p) {
+try {
+const o = ccGroupProbs();
+if (!o[type]) o[type] = {};
+p = Math.min(100, Math.max(0, Math.round(p)));
+o[type][gname] = p;
+store.set(CC_PROB_KEY, JSON.stringify(o));
+} catch (e) {}
+}
+window.ccGroupProb = ccGroupProb;
+window.setCcGroupProb = setCcGroupProb;
+window.ccWeightedPool = function (type) {
+maybeHydrateReplyPool();
+const g = replyPoolGroups();
+const out = [];
+(g[type] || []).forEach(([name, arr]) => {
+if (CC_FUNC_KEYS.indexOf(type) >= 0) return;
+try { if (isGroupOff(ccOffScope(), type, name)) return; } catch (e) {}
+const p = ccGroupProb(type, name);
+if (p <= 0) return; // 概率 0：该分组字卡完全不出现
+const copies = p >= 100 ? 10 : Math.max(1, Math.round(p / 10)); // 概率 100 → 10 份，50 → 5 份，10 → 1 份
+for (let k = 0; k < copies; k++) (arr || []).forEach(c => out.push(c));
+});
+return out;
+};
 window.getCustomCards = function () {
 maybeHydrateReplyPool();
 const g = replyPoolGroups();

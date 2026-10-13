@@ -2408,11 +2408,10 @@ return '遇到打不开的语音 ' + window.__mochiVoiceDeadN + ' 次（录音�
 } catch (e) { return '语音体检读数失败'; }
 };
 function getPool() {
-const cards = (window.getCustomCards && window.getCustomCards()) || [];
-const pokeSet = (function () {
-const pk = (window.getPokeCards && window.getPokeCards()) || [];
-return pk.length ? new Set(pk) : null;
-})();
+// 自定义字卡按分组概率加权（ccWeightedPool：已过滤停用分组，并按各组概率加权）
+const wText = (window.ccWeightedPool && window.ccWeightedPool('text')) || [];
+const wKao = (window.ccWeightedPool && window.ccWeightedPool('kaomoji')) || [];
+const wEmo = (window.ccWeightedPool && window.ccWeightedPool('emoji')) || [];
 const text = [], kaomoji = [], emoji = [], sticker = [], image = [], voice = [], poke = [];
 const mediaSticker = (window.getMediaCards && window.getMediaCards('sticker')) || [];
 const mediaImage = (window.getMediaCards && window.getMediaCards('image')) || [];
@@ -2420,13 +2419,14 @@ const mediaVoice = (window.getMediaCards && window.getMediaCards('voice')) || []
 sticker.push.apply(sticker, mediaSticker);
 image.push.apply(image, mediaImage);
 voice.push.apply(voice, mediaVoice);
-cards.forEach(c => {
-if (pokeSet && pokeSet.has(c)) return; // 拍一拍字卡不进普通回复池
+wText.forEach(c => {
 if (typeof c === 'string' && chatHasMediaPayload(c)) return;
 if (chatIsEmojiCard(c)) emoji.push(c);
 else if (chatIsKaomojiCard(c)) kaomoji.push(c);
 else text.push(c);
 });
+wKao.forEach(c => { if (typeof c === 'string' && c) kaomoji.push(c); });
+wEmo.forEach(c => { if (typeof c === 'string' && c) emoji.push(c); });
 try {
 const dcfg = (window.defaultCardCfg && window.defaultCardCfg()) || {};
 const isOff = window.isDefaultCardOff || null;
