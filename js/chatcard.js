@@ -1614,7 +1614,7 @@ e.preventDefault();
 }
 function renderMgList() {
 const listEl = (document.getElementById('cc-mg-mask') || mask).querySelector('.mg-list');
-const grps = groups[cur] || [];
+const grps = (groups && groups[cur]) || [];
 if (!grps.length) { listEl.innerHTML = '<div class="mg-empty">暂无分组，点击下方新建</div>'; return; }
 listEl.innerHTML = '';
 const handleSvg = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>';
