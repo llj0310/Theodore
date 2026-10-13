@@ -127,8 +127,37 @@ if (t.length >= 2 && isWordTok(t) && pool.indexOf(t) < 0) pool.push(t);
 });
 return pool;
 }
+function singlePool() {
+// 单字源：只取用户自建的词库单字（dict-custom-words 里长度为 1 的汉字）
+// 用户塞哪些字、梦角就只用哪些字拼句，不会被内置常用字淹没
+try {
+const st = window.xyStore && window.xyStore('xy-home-v2');
+const raw = st ? st.get('dict-custom-words') : null;
+const arr = raw ? JSON.parse(raw) : [];
+const out = [];
+const seen = {};
+(arr || []).forEach(t => {
+if (typeof t !== 'string' || t.length !== 1) return;
+if (!HAN.test(t)) return;
+if (seen[t]) return;
+seen[t] = 1;
+out.push(t);
+});
+return out;
+} catch (e) { return []; }
+}
+function singleSentence() {
+// 单字拼句：随机抽 2~5 个单字（允许重复）拼成一句
+const sp = singlePool();
+if (!sp.length) return null;
+const n = 2 + Math.floor(Math.random() * 4);
+let txt = '';
+for (let i = 0; i < n; i++) txt += sp[Math.floor(Math.random() * sp.length)];
+return txt;
+}
 function rebuild(s, mode, material) {
 const str = String(s == null ? '' : s);
+if (mode === 'single') return singleSentence();
 if (mode === 'recall') return recallCut(str);
 if (mode === 'suffix') {
 const base = str.replace(/[，。！？、…～s]+$/, '');
@@ -215,22 +244,34 @@ if (!c || c['mjf-en'] !== 1) return null;
 const prob = Number(c['mjf-prob']);
 if (!isFinite(prob) || prob <= 0 || Math.random() * 100 >= prob) return null;
 const pool = pickSourcePool(c); // #413 三语料源按开关+权重抽
-if (!pool || !pool.length) return null;
+if (!pool || !pool.length) {
+// 无整句语料但词库有单字 → 纯单字拼句（用户只放单字也能用）
+try {
+const sp = singlePool();
+if (sp.length) {
+const txt = withEndPunct(singleSentence(), c);
+if (txt) return { text: txt, src: '' };
+}
+} catch (e0) {}
+return null;
+}
 let style = Math.max(0, Math.min(2, Number(c['mjf-style']) || 1));
 if (c['mjf-mix'] === 1) style = Math.floor(Math.random() * 3);
 const pickOf = arr => arr[Math.floor(Math.random() * arr.length)];
+const hasSingle = singlePool().length > 0; // 词库里放了单字 → 增加单字拼句
 for (let t = 0; t < 8; t++) {
 const s = pool[Math.floor(Math.random() * pool.length)];
 if (s === lastSrc) continue;
 let mode, material = 'fixed';
 if (style === 1) {
 const r = Math.random();
-mode = r < 0.5 ? 'recall' : (r < 0.75 ? 'comma' : 'space');
+if (hasSingle && r < 0.25) mode = 'single';
+else mode = r < 0.5 ? 'recall' : (r < 0.75 ? 'comma' : 'space');
 } else if (style === 2) {
 material = 'cards';
-mode = pickOf(['cutfill', 'comma', 'space', 'addtail', 'tailcut']);
+mode = pickOf(hasSingle ? ['single', 'cutfill', 'comma', 'space', 'addtail', 'tailcut'] : ['cutfill', 'comma', 'space', 'addtail', 'tailcut']);
 } else {
-mode = pickOf(['cutfill', 'comma', 'space', 'suffix', 'tailcut']);
+mode = pickOf(hasSingle ? ['single', 'cutfill', 'comma', 'space', 'suffix', 'tailcut'] : ['cutfill', 'comma', 'space', 'suffix', 'tailcut']);
 }
 const txt = withEndPunct(rebuild(s, mode, material), c);
 if (txt && txt !== s) { lastSrc = s; return { text: txt, src: s }; }
