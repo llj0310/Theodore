@@ -1548,6 +1548,7 @@ mask.hidden = true;
 });
 }
 });
+renderMgList(); // 打开时立即渲染分组列表（开关 + 出现概率）
 }
 function attachGroupRowDrag(row, gi) {
 const handle = row.querySelector('.mg-handle');
