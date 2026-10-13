@@ -1729,12 +1729,18 @@ mask.innerHTML = html;
 document.body.appendChild(mask);
 mask.querySelector('.mg-close').addEventListener('click', function () { mask.hidden = true; });
 mask.addEventListener('click', function (e) { if (e.target === mask) mask.hidden = true; });
-bindMgProbSteppers(mask);
 }
 syncMgProbUI(mask);
+bindMgProbSteppers(mask);
 mask.hidden = false;
 }
 function bindMgProbSteppers(mask) {
+mask.querySelectorAll('.mg-prob .stepper').forEach(function (st) {
+const k = st.dataset.k;
+if (!k) return;
+const nw = st.cloneNode(true);
+st.parentNode.replaceChild(nw, st);
+});
 mask.querySelectorAll('.mg-prob .stepper').forEach(function (st) {
 const k = st.dataset.k;
 if (!k) return;
@@ -3384,7 +3390,10 @@ const g = replyPoolGroups();
 const out = [];
 Object.keys(g).forEach(t => {
 if (CC_FUNC_KEYS.indexOf(t) >= 0) return;
-g[t].forEach(([name, arr]) => arr.forEach(c => out.push(c)));
+(g[t] || []).forEach(([name, arr]) => {
+try { if (isGroupOff(ccOffScope(), t, name)) return; } catch (e) {}
+arr.forEach(c => out.push(c));
+});
 });
 return out;
 };
@@ -3392,7 +3401,10 @@ window.getPokeCards = function () {
 maybeHydrateReplyPool();
 const g = replyPoolGroups();
 const out = [];
-(g['poke'] || []).forEach(([name, arr]) => arr.forEach(c => { if (ccFuncTextOnly(c)) out.push(c); }));
+(g['poke'] || []).forEach(([name, arr]) => {
+try { if (isGroupOff(ccOffScope(), 'poke', name)) return; } catch (e) {}
+arr.forEach(c => { if (ccFuncTextOnly(c)) out.push(c); });
+});
 return out;
 };
 window.getPokeGroups = function () {
@@ -3410,13 +3422,16 @@ window.getMediaCards = function (type) {
 maybeHydrateReplyPool();
 const g = replyPoolGroups();
 const out = [];
-(g[type] || []).forEach(([name, arr]) => arr.forEach(c => {
+(g[type] || []).forEach(([name, arr]) => {
+try { if (isGroupOff(ccOffScope(), type, name)) return; } catch (e) {}
+arr.forEach(c => {
 if (type === 'voice') {
 if (typeof c === 'string' && c.indexOf('|||') > 0) out.push(c);
 } else if (isMediaImg(c)) {
 out.push(c);
 }
-}));
+});
+});
 return out;
 };
 window.getMediaGroups = function (type) {
