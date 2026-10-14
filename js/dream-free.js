@@ -130,7 +130,8 @@ return out;
 } catch (e) { return []; }
 }
 function dictWordSentence() {
-// 用自定义词典的词拼句：随机抽 2~4 个词块（单字/词/短句均可）拼成一句
+// 用自定义词典的词拼句：随机抽 n 个词块（单字/词/短句均可）拼成一句
+// n 取自"回复设置 → 拼字造句 → 词典拼字"的每次拼字最少/最多张数（reply-qs-min / reply-qs-max）
 try {
 const ws = customDictWords();
 if (!ws.length) return null;
@@ -140,7 +141,10 @@ const clean = w.replace(/[，。！？、…～~!！?？\s]/g, '');
 return h.length >= 1 && h.length <= 8 && /^[\u4e00-\u9fff]+$/.test(clean);
 });
 if (!pool.length) return null;
-const n = 2 + Math.floor(Math.random() * 3); // 2~4 个词
+const c = (window.replyCfg && window.replyCfg()) || {};
+const mn = Math.max(1, Math.min(10, Number(c['qs-min']) || 2));
+const mx = Math.max(mn, Math.min(10, Number(c['qs-max']) || 5));
+const n = mn + Math.floor(Math.random() * (mx - mn + 1)); // 最少~最多张数
 const parts = [];
 for (let i = 0; i < n; i++) parts.push(pool[Math.floor(Math.random() * pool.length)]);
 return parts.join('');
@@ -307,9 +311,16 @@ try {
 if (!c || c['mjf-en'] !== 1) return null;
 const prob = Number(c['mjf-prob']);
 if (!isFinite(prob) || prob <= 0 || Math.random() * 100 >= prob) return null;
+// 词典拼字配置（回复设置 → 拼字造句 → 词典拼字）：总开关/混用自定义字卡/拼字概率
+// 词拼句只在该组"词典拼字"开启、且概率 > 0 时参与；概率即"拼字概率"（默认 25）
+const qsEn = c['qs-en'] !== 0;
+const qsCc = c['qs-cc'] !== 0;
+let qsProb = Number(c['qs-prob']);
+if (!isFinite(qsProb) || qsProb < 0) qsProb = 25;
+const dictWordsOk = () => qsEn && qsCc && qsProb > 0 && customDictWords().length > 0;
 const pool = pickSourcePool(c); // #413 三语料源按开关+权重抽
 if (!pool || !pool.length) {
-// 无整句语料时兜底：①用户自建单字拼句 ②自定义词典词拼句
+// 无整句语料时兜底：①用户自建单字拼句 ②自定义词典词拼句（受词典拼字配置控制）
 try {
 const sp = singlePool();
 if (sp.length) {
@@ -318,10 +329,12 @@ if (txt) return { text: txt, src: '' };
 }
 } catch (e0) {}
 try {
+if (dictWordsOk() && Math.random() * 100 < qsProb) {
 const wt = dictWordSentence();
 if (wt) {
 const txt = withEndPunct(wt, c);
 if (txt) return { text: txt, src: '' };
+}
 }
 } catch (e1) {}
 return null;
@@ -330,27 +343,29 @@ let style = Math.max(0, Math.min(2, Number(c['mjf-style']) || 1));
 if (c['mjf-mix'] === 1) style = Math.floor(Math.random() * 3);
 const pickOf = arr => arr[Math.floor(Math.random() * arr.length)];
 const hasSingle = singlePool().length > 0; // 词库里放了单字 → 增加单字拼句
-const hasDictWords = customDictWords().length > 0; // 自定义词典有词 → 增加词典词拼句
+const hasDictWords = dictWordsOk(); // 自定义词典有词 + 词典拼字开启 → 增加词典词拼句（概率受 qs-prob 控制）
 for (let t = 0; t < 8; t++) {
 const s = pool[Math.floor(Math.random() * pool.length)];
 if (s === lastSrc) continue;
 let mode, material = 'fixed';
 if (style === 1) {
 const r = Math.random();
-if (hasDictWords && (r < 0.55 || pool.length < 3)) mode = 'dictword'; // 词典有词：词拼句优先（语料少时更稳）
+if (hasDictWords && Math.random() * 100 < qsProb && (r < 0.55 || pool.length < 3)) mode = 'dictword'; // 词典有词：词拼句（先过拼字概率门）
 else if (hasSingle && r < 0.2) mode = 'single';
 else mode = r < 0.65 ? 'recall' : (r < 0.85 ? 'comma' : 'space');
 } else if (style === 2) {
 material = 'cards';
-mode = pickOf((hasSingle ? ['single'] : []).concat((hasDictWords ? ['dictword', 'dictword', 'dictword'] : [])).concat(['cutfill', 'comma', 'space', 'addtail', 'tailcut']));
+if (hasDictWords && Math.random() * 100 < qsProb) mode = 'dictword';
+else mode = pickOf((hasSingle ? ['single'] : []).concat(['cutfill', 'comma', 'space', 'addtail', 'tailcut']));
 } else {
-mode = pickOf((hasSingle ? ['single'] : []).concat((hasDictWords ? ['dictword', 'dictword', 'dictword'] : [])).concat(['cutfill', 'comma', 'space', 'suffix', 'tailcut']));
+if (hasDictWords && Math.random() * 100 < qsProb) mode = 'dictword';
+else mode = pickOf((hasSingle ? ['single'] : []).concat(['cutfill', 'comma', 'space', 'suffix', 'tailcut']));
 }
 const txt = withEndPunct(rebuild(s, mode, material), c);
 if (txt && txt !== s) { lastSrc = s; return { text: txt, src: mode === 'dictword' ? '' : s }; } // dictword=用词典词拼句（程序造的，无源卡）
 }
-// 语料太少/全被防复读挡住 → 词典词拼句兜底
-try { if (hasDictWords) { const w = withEndPunct(dictWordSentence(), c); if (w) return { text: w, src: '' }; } } catch (e2) {}
+// 语料太少/全被防复读挡住 → 词典词拼句兜底（同样过拼字概率门）
+try { if (hasDictWords && Math.random() * 100 < qsProb) { const w = withEndPunct(dictWordSentence(), c); if (w) return { text: w, src: '' }; } } catch (e2) {}
 return null;
 } catch (e) { return null; }
 };
