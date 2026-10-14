@@ -1629,7 +1629,7 @@ const gOff = isGroupOff(ccOffScope(), cur, gname);
 const isDict = cur === 'dict';
 const dictMode = isDict ? window.ccDictScope(gname) : '';
 const dictBtn = isDict
-? '<button type="button" class="mg-scope' + (dictMode === 'all' ? ' all' : '') + '" title="' + (dictMode === 'all' ? '全部可用：普通回复和梦角造句都会用到该分组的词' : '仅特定用：只在梦角造句/拼字/切词里用，不进普通回复') + '">' + (dictMode === 'all' ? '全部可用' : '仅特定用') + '</button>'
+? '<button type="button" class="mg-scope' + (dictMode === 'all' ? ' all' : '') + '" title="' + (dictMode === 'all' ? '全部可用：所有梦角都能用到这个分组的词' : '仅特定用：只有当前桌面/这个梦角能用') + '">' + (dictMode === 'all' ? '全部可用' : '仅特定用') + '</button>'
 : '';
 row.innerHTML = '<button class="mg-handle" aria-label="拖动排序">' + handleSvg + '</button>' +
 '<span class="mg-name">' + esc(gname) + '</span><span class="mg-count">' + arr.length + ' 张</span>' +
@@ -1684,8 +1684,8 @@ const next = window.ccDictScope(gname) === 'all' ? 'func' : 'all';
 setCcDictScope(gname, next);
 mgScope.classList.toggle('all', next === 'all');
 mgScope.textContent = next === 'all' ? '全部可用' : '仅特定用';
-mgScope.title = next === 'all' ? '全部可用：普通回复和梦角造句都会用到该分组的词' : '仅特定用：只在梦角造句/拼字/切词里用，不进普通回复';
-toast(next === 'all' ? '「' + gname + '」设为全部可用：普通回复也会用到这些词' : '「' + gname + '」设为仅特定用：只在梦角造句等特定功能里用');
+mgScope.title = next === 'all' ? '全部可用：所有梦角都能用到这个分组的词' : '仅特定用：只有当前桌面/这个梦角能用';
+toast(next === 'all' ? '「' + gname + '」设为全部可用：所有梦角都会用到这些词' : '「' + gname + '」设为仅特定用：只有当前这个梦角能用');
 });
 }
 if (!builtin) {
@@ -3460,55 +3460,67 @@ store.set(CC_PROB_KEY, JSON.stringify(o));
 }
 window.ccGroupProb = ccGroupProb;
 window.setCcGroupProb = setCcGroupProb;
-// ===== 自定义词典分组作用域：'all'=全部回复可用（含梦角）| 'func'=仅特定功能用（梦角造句/拼字/切词，不进普通回复池）=====
-const DICT_SCOPE_KEY = 'cc-dict-scope';
-const DICT_SCOPE_PUB_KEY = 'cc-dict-public-scope';
-function dictScopeLoad(scope) {
+// ===== 自定义词典分组作用域（按"梦角"区分）=====
+// 'all'=全部可用：该分组同步到公用词典池（cc-groups-public.dict），所有桌面/梦角都能用
+// 'func'=仅特定用：该分组只留在当前桌面专属库（cc-groups.dict），只有当前这个梦角能用
+// 词典分类（dict）一律不进普通聊天回复池，只给梦角造句/拼字/切词等特定功能用（与系统词典一致）
+function ccGroupsFullRead(scope) {
 try {
 const s = scope === 'public' ? pubStore() : store;
-const k = scope === 'public' ? DICT_SCOPE_PUB_KEY : DICT_SCOPE_KEY;
-const raw = s.get(k);
-const o = JSON.parse(raw || 'null');
-if (o && typeof o === 'object') return o;
+const k = scope === 'public' ? PUB_KEY : 'cc-groups';
+const g = JSON.parse(s.get(k) || 'null');
+if (g && typeof g === 'object') return g;
 } catch (e) {}
 return {};
 }
-function dictScopeSave(scope, o) {
-try {
-const s = scope === 'public' ? pubStore() : store;
-const k = scope === 'public' ? DICT_SCOPE_PUB_KEY : DICT_SCOPE_KEY;
-s.set(k, JSON.stringify(o));
-} catch (e) {}
-}
 function ccDictScope(gname) {
-try { return dictScopeLoad(ccScope === 'public' ? 'public' : 'own')[gname] === 'all' ? 'all' : 'func'; } catch (e) { return 'func'; }
+// 分组在公用词典池 → 全部可用（所有梦角）；否则仅特定用（当前桌面）
+try {
+const pubG = ccGroupsFullRead('public');
+return ((pubG['dict'] || []).some(g => g && g[0] === gname)) ? 'all' : 'func';
+} catch (e) { return 'func'; }
+}
+function syncDictGroupToPublic(gname, toPub) {
+// toPub=true：把当前桌面的词典分组复制/同步到公用池（所有梦角可用，own 保留）
+// toPub=false：从公用池删除该分组（回到仅当前梦角用，own 保留）
+try {
+const pubG = ccGroupsFullRead('public');
+if (toPub) {
+const ownG = ccGroupsFullRead('own');
+const fd = ownG['dict'] || [];
+const grp = fd.find(g => g && g[0] === gname);
+if (!grp) return false;
+const pd = pubG['dict'] || [];
+const pi = pd.findIndex(g => g && g[0] === gname);
+if (pi >= 0) pd.splice(pi, 1);
+pd.push([grp[0], (grp[1] || []).slice()]);
+pubG['dict'] = pd;
+} else {
+pubG['dict'] = (pubG['dict'] || []).filter(g => !(g && g[0] === gname));
+}
+pubStore().set(PUB_KEY, JSON.stringify(pubG));
+pubInvalidate();
+ownPoolCache = null;
+return true;
+} catch (e) { return false; }
 }
 function setCcDictScope(gname, mode) {
-try {
-const scope = ccScope === 'public' ? 'public' : 'own';
-const o = dictScopeLoad(scope);
-if (mode === 'all') o[gname] = 'all'; else delete o[gname]; // 缺省=func
-dictScopeSave(scope, o);
-if (typeof render === 'function') { try { render(); } catch (e0) {} }
-if (typeof renderMgList === 'function') { try { renderMgList(); } catch (e0) {} }
-} catch (e) {}
+const toPub = mode === 'all';
+syncDictGroupToPublic(gname, toPub);
+try { if (typeof render === 'function') render(); } catch (e0) {}
+try { if (typeof renderGroupsBar === 'function') renderGroupsBar(); } catch (e0) {}
+try { if (typeof renderMgList === 'function') renderMgList(); } catch (e0) {}
 }
 window.ccDictScope = ccDictScope;
 window.setCcDictScope = setCcDictScope;
-// 合并视角：该分组在专属或公用任一设为"全部可用"即进普通回复池
-window.ccDictInPool = function (gname) {
-try {
-return dictScopeLoad('own')[gname] === 'all' || dictScopeLoad('public')[gname] === 'all';
-} catch (e) { return false; }
-};
 window.ccWeightedPool = function (type) {
 maybeHydrateReplyPool();
 const g = replyPoolGroups();
 const out = [];
+if (type === 'dict') return out; // 词典分类：只给梦角/拼字/切词用，不进普通回复池
 (g[type] || []).forEach(([name, arr]) => {
 if (CC_FUNC_KEYS.indexOf(type) >= 0) return;
 try { if (isGroupOff(ccOffScope(), type, name)) return; } catch (e) {}
-if (type === 'dict' && !window.ccDictInPool(name)) return; // 词典"仅特定用"不进普通回复池
 const p = ccGroupProb(type, name);
 if (p <= 0) return; // 概率 0：该分组字卡完全不出现
 const copies = p >= 100 ? 10 : Math.max(1, Math.round(p / 10)); // 概率 100 → 10 份，50 → 5 份，10 → 1 份
@@ -3522,9 +3534,9 @@ const g = replyPoolGroups();
 const out = [];
 Object.keys(g).forEach(t => {
 if (CC_FUNC_KEYS.indexOf(t) >= 0) return;
+if (t === 'dict') return; // 词典分类：只给梦角/拼字/切词用，不进普通回复池
 (g[t] || []).forEach(([name, arr]) => {
 try { if (isGroupOff(ccOffScope(), t, name)) return; } catch (e) {}
-if (t === 'dict' && !window.ccDictInPool(name)) return; // 词典"仅特定用"不进普通回复池
 arr.forEach(c => out.push(c));
 });
 });
@@ -3802,10 +3814,8 @@ const g = replyPoolGroupsFor(cid);
 const out = [];
 Object.keys(g).forEach(t => {
 if (CC_FUNC_KEYS.indexOf(t) >= 0) return;
-(g[t] || []).forEach(([name, arr]) => {
-if (t === 'dict' && !window.ccDictInPool(name)) return; // 词典"仅特定用"不进普通回复池
-(arr || []).forEach(c => out.push(c));
-});
+if (t === 'dict') return; // 词典分类：只给梦角/拼字/切词用，不进普通回复池
+(g[t] || []).forEach(([name, arr]) => (arr || []).forEach(c => out.push(c)));
 });
 return out;
 };

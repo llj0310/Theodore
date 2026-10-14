@@ -337,18 +337,20 @@ if (s === lastSrc) continue;
 let mode, material = 'fixed';
 if (style === 1) {
 const r = Math.random();
-if (hasSingle && r < 0.2) mode = 'single';
-else if (hasDictWords && r < 0.4) mode = 'dictword';
+if (hasDictWords && (r < 0.55 || pool.length < 3)) mode = 'dictword'; // 词典有词：词拼句优先（语料少时更稳）
+else if (hasSingle && r < 0.2) mode = 'single';
 else mode = r < 0.65 ? 'recall' : (r < 0.85 ? 'comma' : 'space');
 } else if (style === 2) {
 material = 'cards';
-mode = pickOf((hasSingle ? ['single'] : []).concat(hasDictWords ? ['dictword'] : []).concat(['cutfill', 'comma', 'space', 'addtail', 'tailcut']));
+mode = pickOf((hasSingle ? ['single'] : []).concat((hasDictWords ? ['dictword', 'dictword', 'dictword'] : [])).concat(['cutfill', 'comma', 'space', 'addtail', 'tailcut']));
 } else {
-mode = pickOf((hasSingle ? ['single'] : []).concat(hasDictWords ? ['dictword'] : []).concat(['cutfill', 'comma', 'space', 'suffix', 'tailcut']));
+mode = pickOf((hasSingle ? ['single'] : []).concat((hasDictWords ? ['dictword', 'dictword', 'dictword'] : [])).concat(['cutfill', 'comma', 'space', 'suffix', 'tailcut']));
 }
 const txt = withEndPunct(rebuild(s, mode, material), c);
 if (txt && txt !== s) { lastSrc = s; return { text: txt, src: mode === 'dictword' ? '' : s }; } // dictword=用词典词拼句（程序造的，无源卡）
 }
+// 语料太少/全被防复读挡住 → 词典词拼句兜底
+try { if (hasDictWords) { const w = withEndPunct(dictWordSentence(), c); if (w) return { text: w, src: '' }; } } catch (e2) {}
 return null;
 } catch (e) { return null; }
 };
