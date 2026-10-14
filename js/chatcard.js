@@ -134,7 +134,7 @@ ccTokenizeGiantMedia(ownPoolCache, 'own');
 }
 return ownPoolCache;
 }
-const CC_TYPES = ['text', 'kaomoji', 'emoji', 'sticker', 'image', 'poke', 'voice'];
+const CC_TYPES = ['text', 'kaomoji', 'emoji', 'sticker', 'image', 'poke', 'voice', 'dict']; // dict=自定义词典（可自建词/字/句，分组级作用域：全部可用/仅特定用）
 const CC_FUNC_KEYS = ['fish', 'eat', 'period', 'water', 'garden', 'sync', 'reach', 'cjian', 'room', 'piggy', 'drift', 'interact', 'music', 'siyu', 'watch', 'read',
 'mjfree']; // #317 梦角自由造句：程序生成的重造句卡（dream-free.js），管理页可查看/删除，不进聊天通用池
 const CC_ALL_TYPES = CC_TYPES.concat(CC_FUNC_KEYS);
@@ -301,7 +301,7 @@ notifyVoiceHeal(_vh.fixed, _vh.removed);
 return saved;
 }
 } catch (e) {}
-return { text: [], kaomoji: [], emoji: [], sticker: [], image: [], poke: [], voice: [] };
+return { text: [], kaomoji: [], emoji: [], sticker: [], image: [], poke: [], voice: [], dict: [] };
 }
 let ownRestoreResolve = null;
 const ownRestoreP = new Promise(res => { ownRestoreResolve = res; });
@@ -1235,6 +1235,7 @@ const isVoice = cur === 'voice';
 const emptyTxt = cur === 'sticker' ? '暂无表情包 · 点击右上角批量导入上传图片'
 : cur === 'image' ? '暂无图片 · 点击右上角批量导入上传图片'
 : cur === 'voice' ? '暂无语音 · 点击右上角批量导入上传音频'
+: cur === 'dict' ? '暂无词典词条 · 先点左下「新建分组」，再用批量导入加入词/字/句（梦角造句会用到它们）'
 : '暂无字卡';
 const impLabel = isVoice ? '批量导入音频' : (cur === 'sticker' || cur === 'image') ? '批量导入图片' : '批量导入字卡';
 list.innerHTML = '<div class="cc-empty-wrap" style="grid-column:1/-1">'
@@ -1625,10 +1626,16 @@ row.className = 'mg-row';
 row.dataset.gidx = String(gi);
 const builtin = (BUILTIN[cur] || []).some(b => b[0] === gname);
 const gOff = isGroupOff(ccOffScope(), cur, gname);
+const isDict = cur === 'dict';
+const dictMode = isDict ? window.ccDictScope(gname) : '';
+const dictBtn = isDict
+? '<button type="button" class="mg-scope' + (dictMode === 'all' ? ' all' : '') + '" title="' + (dictMode === 'all' ? '全部可用：普通回复和梦角造句都会用到该分组的词' : '仅特定用：只在梦角造句/拼字/切词里用，不进普通回复') + '">' + (dictMode === 'all' ? '全部可用' : '仅特定用') + '</button>'
+: '';
 row.innerHTML = '<button class="mg-handle" aria-label="拖动排序">' + handleSvg + '</button>' +
 '<span class="mg-name">' + esc(gname) + '</span><span class="mg-count">' + arr.length + ' 张</span>' +
 '<button type="button" class="mg-toggle' + (gOff ? ' off' : '') + '" title="' + (gOff ? '点击启用该分组' : '点击停用该分组') + '">' + (gOff ? '已停用' : '启用中') + '</button>' +
 '<div class="mg-prob-stepper" title="该分组字卡的出现概率（0% 为完全不出现）"><span class="mg-prob-lab">概率</span><button type="button" class="stp-min">−</button><input class="stp-val" readonly><button type="button" class="stp-max">+</button></div>' +
+dictBtn +
 (builtin ? '<span class="mg-tag">内置</span>' : '<button class="mg-rn" aria-label="重命名">' + editSvg + '</button><button class="mg-del">✕</button>');
 attachGroupRowDrag(row, gi);
 const mgTgl = row.querySelector('.mg-toggle');
@@ -1667,6 +1674,18 @@ const p = Math.min(100, ccGroupProb(cur, gname) + 10);
 setCcGroupProb(cur, gname, p);
 refProb();
 toast('分组「' + gname + '」出现概率：' + p + '%');
+});
+}
+const mgScope = row.querySelector('.mg-scope');
+if (mgScope) {
+mgScope.addEventListener('click', (e) => {
+e.stopPropagation();
+const next = window.ccDictScope(gname) === 'all' ? 'func' : 'all';
+setCcDictScope(gname, next);
+mgScope.classList.toggle('all', next === 'all');
+mgScope.textContent = next === 'all' ? '全部可用' : '仅特定用';
+mgScope.title = next === 'all' ? '全部可用：普通回复和梦角造句都会用到该分组的词' : '仅特定用：只在梦角造句/拼字/切词里用，不进普通回复';
+toast(next === 'all' ? '「' + gname + '」设为全部可用：普通回复也会用到这些词' : '「' + gname + '」设为仅特定用：只在梦角造句等特定功能里用');
 });
 }
 if (!builtin) {
@@ -2163,7 +2182,7 @@ const ccExport = document.getElementById('cc-export');
 if (ccExport) {
 const EXPORT_CATS = [
 ['text', '主字卡'], ['kaomoji', '颜文字'], ['emoji', 'emoji'],
-['sticker', '表情包'], ['image', '图片'], ['poke', '拍一拍'], ['voice', '语音'],
+['sticker', '表情包'], ['image', '图片'], ['poke', '拍一拍'], ['voice', '语音'], ['dict', '词典'],
 ['fish', '摸鱼'], ['eat', '吃饭'], ['period', '经期'], ['water', '喝水'], ['garden', '花园'],
 ['sync', '同频'], ['reach', '伸手'], ['cjian', '此间'], ['room', '房间'], ['piggy', '存钱罐'],
 ['drift', '漂流瓶'], ['interact', '互动回应'], ['music', '音乐'], ['siyu', '私语'], ['watch', '看电视'], ['read', '读小说'],
@@ -3441,6 +3460,47 @@ store.set(CC_PROB_KEY, JSON.stringify(o));
 }
 window.ccGroupProb = ccGroupProb;
 window.setCcGroupProb = setCcGroupProb;
+// ===== 自定义词典分组作用域：'all'=全部回复可用（含梦角）| 'func'=仅特定功能用（梦角造句/拼字/切词，不进普通回复池）=====
+const DICT_SCOPE_KEY = 'cc-dict-scope';
+const DICT_SCOPE_PUB_KEY = 'cc-dict-public-scope';
+function dictScopeLoad(scope) {
+try {
+const s = scope === 'public' ? pubStore() : store;
+const k = scope === 'public' ? DICT_SCOPE_PUB_KEY : DICT_SCOPE_KEY;
+const raw = s.get(k);
+const o = JSON.parse(raw || 'null');
+if (o && typeof o === 'object') return o;
+} catch (e) {}
+return {};
+}
+function dictScopeSave(scope, o) {
+try {
+const s = scope === 'public' ? pubStore() : store;
+const k = scope === 'public' ? DICT_SCOPE_PUB_KEY : DICT_SCOPE_KEY;
+s.set(k, JSON.stringify(o));
+} catch (e) {}
+}
+function ccDictScope(gname) {
+try { return dictScopeLoad(ccScope === 'public' ? 'public' : 'own')[gname] === 'all' ? 'all' : 'func'; } catch (e) { return 'func'; }
+}
+function setCcDictScope(gname, mode) {
+try {
+const scope = ccScope === 'public' ? 'public' : 'own';
+const o = dictScopeLoad(scope);
+if (mode === 'all') o[gname] = 'all'; else delete o[gname]; // 缺省=func
+dictScopeSave(scope, o);
+if (typeof render === 'function') { try { render(); } catch (e0) {} }
+if (typeof renderMgList === 'function') { try { renderMgList(); } catch (e0) {} }
+} catch (e) {}
+}
+window.ccDictScope = ccDictScope;
+window.setCcDictScope = setCcDictScope;
+// 合并视角：该分组在专属或公用任一设为"全部可用"即进普通回复池
+window.ccDictInPool = function (gname) {
+try {
+return dictScopeLoad('own')[gname] === 'all' || dictScopeLoad('public')[gname] === 'all';
+} catch (e) { return false; }
+};
 window.ccWeightedPool = function (type) {
 maybeHydrateReplyPool();
 const g = replyPoolGroups();
@@ -3448,6 +3508,7 @@ const out = [];
 (g[type] || []).forEach(([name, arr]) => {
 if (CC_FUNC_KEYS.indexOf(type) >= 0) return;
 try { if (isGroupOff(ccOffScope(), type, name)) return; } catch (e) {}
+if (type === 'dict' && !window.ccDictInPool(name)) return; // 词典"仅特定用"不进普通回复池
 const p = ccGroupProb(type, name);
 if (p <= 0) return; // 概率 0：该分组字卡完全不出现
 const copies = p >= 100 ? 10 : Math.max(1, Math.round(p / 10)); // 概率 100 → 10 份，50 → 5 份，10 → 1 份
@@ -3463,6 +3524,7 @@ Object.keys(g).forEach(t => {
 if (CC_FUNC_KEYS.indexOf(t) >= 0) return;
 (g[t] || []).forEach(([name, arr]) => {
 try { if (isGroupOff(ccOffScope(), t, name)) return; } catch (e) {}
+if (t === 'dict' && !window.ccDictInPool(name)) return; // 词典"仅特定用"不进普通回复池
 arr.forEach(c => out.push(c));
 });
 });
@@ -3719,7 +3781,7 @@ try {
 const g = JSON.parse(raw || 'null');
 if (g && g.text) return g;
 } catch (e) {}
-return { text: [], kaomoji: [], emoji: [], sticker: [], image: [], poke: [], voice: [] };
+return { text: [], kaomoji: [], emoji: [], sticker: [], image: [], poke: [], voice: [], dict: [] };
 }
 document.addEventListener('contact-switched', function () {
 if (editSaveTimer) { clearTimeout(editSaveTimer); editSaveTimer = null; }
@@ -3740,7 +3802,10 @@ const g = replyPoolGroupsFor(cid);
 const out = [];
 Object.keys(g).forEach(t => {
 if (CC_FUNC_KEYS.indexOf(t) >= 0) return;
-(g[t] || []).forEach(([name, arr]) => (arr || []).forEach(c => out.push(c)));
+(g[t] || []).forEach(([name, arr]) => {
+if (t === 'dict' && !window.ccDictInPool(name)) return; // 词典"仅特定用"不进普通回复池
+(arr || []).forEach(c => out.push(c));
+});
 });
 return out;
 };

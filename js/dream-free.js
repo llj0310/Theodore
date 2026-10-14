@@ -21,6 +21,15 @@ if (wd.length > segMax && wd.length <= 8) segMax = wd.length;
 });
 });
 } catch (e) {}
+// 自定义词典分组（字卡库→词典）的词条也进切词词典
+try {
+customDictWords().forEach(wd => {
+if (typeof wd !== 'string' || wd.length < 2 || wd.length > 8) return;
+if (segDict.has(wd)) return;
+segDict.add(wd);
+if (wd.length > segMax) segMax = wd.length;
+});
+} catch (e) {}
 return segDict;
 }
 function segment(s) {
@@ -80,10 +89,64 @@ function dictPool() {
 try {
 const gs = (window.getDefaultCardGroups && window.getDefaultCardGroups('dict')) || [];
 const all = gs.reduce((a, g) => a.concat((g && g[1]) || []), []);
-return filterCorpus(all.filter(t => !(window.isDefaultCardOff && window.isDefaultCardOff('dict', t))));
+// 系统预设词典（已清空时为 0）+ 自定义词典整句（≥4 字语料）
+const cd = customDictWords().filter(t => filterCorpus([t]).length > 0);
+return filterCorpus(all.concat(cd).filter(t => !(window.isDefaultCardOff && window.isDefaultCardOff('dict', t))));
 } catch (e) { return []; }
 }
 function allCorpus() { return customPool().concat(defaultPool(), dictPool()); }
+// ===== 自定义词典（字卡库 → 词典分类，分组作用域 all/func 均可被梦角使用）=====
+function ccGroupsRawOwn() {
+try { const s = window.activeStore && window.activeStore(); return s ? s.get('cc-groups') : null; } catch (e) { return null; }
+}
+function ccGroupsRawPub() {
+try { return (window.xyStore('xy-home-v2') || {}).get && window.xyStore('xy-home-v2').get('cc-groups-public'); } catch (e) { return null; }
+}
+function customDictWords() {
+// 自定义词典全部词条（专属 + 公用合并去重）：梦角把词典当"特定功能"，all/func 分组都读
+try {
+const out = [];
+const seen = {};
+const add = (raw) => {
+try {
+const g = JSON.parse(raw || 'null');
+if (!g || !Array.isArray(g['dict'])) return;
+(g['dict'] || []).forEach((grp) => {
+if (!grp || !Array.isArray(grp[1])) return;
+(grp[1] || []).forEach(c => {
+if (typeof c !== 'string' || !c.trim()) return;
+if (c.indexOf('data:') === 0 || c.indexOf('|||') >= 0) return;
+const v = c.trim();
+if (seen[v]) return;
+seen[v] = 1;
+out.push(v);
+});
+});
+} catch (e) {}
+};
+add(ccGroupsRawOwn());
+add(ccGroupsRawPub());
+return out;
+} catch (e) { return []; }
+}
+function dictWordSentence() {
+// 用自定义词典的词拼句：随机抽 2~4 个词块（单字/词/短句均可）拼成一句
+try {
+const ws = customDictWords();
+if (!ws.length) return null;
+const pool = ws.filter(w => {
+const h = (w.match(/[\u4e00-\u9fff]/g) || []);
+const clean = w.replace(/[，。！？、…～~!！?？\s]/g, '');
+return h.length >= 1 && h.length <= 8 && /^[\u4e00-\u9fff]+$/.test(clean);
+});
+if (!pool.length) return null;
+const n = 2 + Math.floor(Math.random() * 3); // 2~4 个词
+const parts = [];
+for (let i = 0; i < n; i++) parts.push(pool[Math.floor(Math.random() * pool.length)]);
+return parts.join('');
+} catch (e) { return null; }
+}
+window.dreamFreeDictWords = customDictWords;
 function pickSourcePool(c) {
 const on = k => !(c && c[k] === 0); // 缺省=开（存量升级即得三源全开）
 const wt = (k, d) => { const n = Number(c && c[k]); return (isFinite(n) && n > 0) ? n : d; };
@@ -158,6 +221,7 @@ return txt;
 function rebuild(s, mode, material) {
 const str = String(s == null ? '' : s);
 if (mode === 'single') return singleSentence();
+if (mode === 'dictword') return dictWordSentence();
 if (mode === 'recall') return recallCut(str);
 if (mode === 'suffix') {
 const base = str.replace(/[，。！？、…～s]+$/, '');
@@ -245,7 +309,7 @@ const prob = Number(c['mjf-prob']);
 if (!isFinite(prob) || prob <= 0 || Math.random() * 100 >= prob) return null;
 const pool = pickSourcePool(c); // #413 三语料源按开关+权重抽
 if (!pool || !pool.length) {
-// 无整句语料但词库有单字 → 纯单字拼句（用户只放单字也能用）
+// 无整句语料时兜底：①用户自建单字拼句 ②自定义词典词拼句
 try {
 const sp = singlePool();
 if (sp.length) {
@@ -253,28 +317,37 @@ const txt = withEndPunct(singleSentence(), c);
 if (txt) return { text: txt, src: '' };
 }
 } catch (e0) {}
+try {
+const wt = dictWordSentence();
+if (wt) {
+const txt = withEndPunct(wt, c);
+if (txt) return { text: txt, src: '' };
+}
+} catch (e1) {}
 return null;
 }
 let style = Math.max(0, Math.min(2, Number(c['mjf-style']) || 1));
 if (c['mjf-mix'] === 1) style = Math.floor(Math.random() * 3);
 const pickOf = arr => arr[Math.floor(Math.random() * arr.length)];
 const hasSingle = singlePool().length > 0; // 词库里放了单字 → 增加单字拼句
+const hasDictWords = customDictWords().length > 0; // 自定义词典有词 → 增加词典词拼句
 for (let t = 0; t < 8; t++) {
 const s = pool[Math.floor(Math.random() * pool.length)];
 if (s === lastSrc) continue;
 let mode, material = 'fixed';
 if (style === 1) {
 const r = Math.random();
-if (hasSingle && r < 0.25) mode = 'single';
-else mode = r < 0.5 ? 'recall' : (r < 0.75 ? 'comma' : 'space');
+if (hasSingle && r < 0.2) mode = 'single';
+else if (hasDictWords && r < 0.4) mode = 'dictword';
+else mode = r < 0.65 ? 'recall' : (r < 0.85 ? 'comma' : 'space');
 } else if (style === 2) {
 material = 'cards';
-mode = pickOf(hasSingle ? ['single', 'cutfill', 'comma', 'space', 'addtail', 'tailcut'] : ['cutfill', 'comma', 'space', 'addtail', 'tailcut']);
+mode = pickOf((hasSingle ? ['single'] : []).concat(hasDictWords ? ['dictword'] : []).concat(['cutfill', 'comma', 'space', 'addtail', 'tailcut']));
 } else {
-mode = pickOf(hasSingle ? ['single', 'cutfill', 'comma', 'space', 'suffix', 'tailcut'] : ['cutfill', 'comma', 'space', 'suffix', 'tailcut']);
+mode = pickOf((hasSingle ? ['single'] : []).concat(hasDictWords ? ['dictword'] : []).concat(['cutfill', 'comma', 'space', 'suffix', 'tailcut']));
 }
 const txt = withEndPunct(rebuild(s, mode, material), c);
-if (txt && txt !== s) { lastSrc = s; return { text: txt, src: s }; }
+if (txt && txt !== s) { lastSrc = s; return { text: txt, src: mode === 'dictword' ? '' : s }; } // dictword=用词典词拼句（程序造的，无源卡）
 }
 return null;
 } catch (e) { return null; }
