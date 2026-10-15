@@ -788,7 +788,9 @@ const ov = window.dictOverall ? window.dictOverall('chat') : 100;
 if (gate(useOk, '词典聊天使用', useOk ? '开（' + ov + '% 概率）' : '关') && !blocked) blocked = '词典「聊天使用」被关（词典独立页里打开）';
 if (useOk && !(typeof ov === 'number' && isFinite(ov) && ov > 0) && !blocked) blocked = '词典「聊天使用概率」为 0（词典独立页调高）';
 const pyOk = c['py-en'] === 1;
-if (gate(pyOk, '多字卡回复总闸', pyOk ? '开' : '关·拼字整体停用') && !blocked) blocked = '「每条消息使用多字卡回复」总开关关着——#1236 起它是词典拼字的总闸，关了就两种形态都不再触发（要拼字就把它打开）';
+// #1236 后 py-en 是多张字卡拼字的总闸；但它只停"多字卡拼字/语录拼字"形态，
+// 梦角的词典词拼句（拼句）是独立链路，不受 py-en 影响，由"词典拼字"开关+概率控制 —— 所以 py-en 关不阻塞拼句
+gate(pyOk, '多字卡回复总闸', pyOk ? '开' : '关·多张字卡拼字停用，梦角拼句不受影响');
 const enOk = c['qs-en'] === 1;
 const prob = Number(c['qs-prob']);
 if (gate(enOk, '拼字总开关', enOk ? '开（' + (isFinite(prob) ? prob : 0) + '% 概率）' : '关') && !blocked) blocked = '「词典拼字」总开关被关（本组第一行打开）';
