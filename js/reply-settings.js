@@ -118,9 +118,20 @@ try { out['py-punct-custom'] = String(ls.get('reply-py-punct-custom') || '[]'); 
 try { out['as-badge-custom'] = String(ls.get('reply-as-badge-custom') || '[]'); } catch (e) { out['as-badge-custom'] = '[]'; }
 try { out['mjf-punct-pool'] = String(ls.get('reply-mjf-punct-pool') || ''); } catch (e) { out['mjf-punct-pool'] = ''; }
 try { out['mjf-punct-set'] = String(ls.get('reply-mjf-punct-set') || ''); } catch (e) { out['mjf-punct-set'] = ''; }
+if (pyMasterRead() === 0) { out['py-en'] = 0; out['gc-py-en'] = 0; } // 全局总闸：所有梦角/群聊统一关多字卡回复
 return out;
 }
 window.replyCfg = getCfg;
+// 全部梦角多字卡回复总闸：存全局（xy-home-v2），关闭后所有桌面/群聊的多字卡回复一并不触发
+// 各桌面自己的 py-en / gc-py-en 开关不动，总闸重开即恢复
+function pyMasterRead() {
+try { return window.xyStore('xy-home-v2').get('reply-py-master') === '0' ? 0 : 1; } catch (e) { return 1; }
+}
+function pyMasterSave(v) {
+try { window.xyStore('xy-home-v2').set('reply-py-master', v ? '1' : '0'); } catch (e) {}
+}
+window.pyMasterRead = pyMasterRead;
+window.pyMasterSave = pyMasterSave;
 window.replyCfgFor = function (cid) {
 const out = {};
 let s = null;
@@ -139,6 +150,7 @@ const spPair2 = spellPairFrom(s || ls, out);
 out['qs-min'] = spPair2.min;
 out['qs-max'] = spPair2.max;
 out['qs-pair-own'] = spPair2.own;
+if (pyMasterRead() === 0) { out['py-en'] = 0; out['gc-py-en'] = 0; } // 全局总闸：所有梦角/群聊统一关多字卡回复
 return out;
 };
 window.groupChatCfg = function () {
@@ -303,6 +315,7 @@ val.setAttribute('value', str);
 const el = document.getElementById(k);
 if (el) el.checked = cfg[k] === 1;
 });
+try { const pmEl = document.getElementById('py-master'); if (pmEl) pmEl.checked = pyMasterRead() === 1; } catch (e) {}
 try { if (window.rpThxModeSync) window.rpThxModeSync(); } catch (e) {}
 syncSpellPairReadout();
 }
@@ -439,6 +452,17 @@ try { if (window.applyContinueSayUI) window.applyContinueSayUI(); } catch (e) {}
 });
 }
 });
+try {
+const pmElB = document.getElementById('py-master');
+if (pmElB) {
+pmElB.addEventListener('change', () => {
+pyMasterSave(pmElB.checked ? 1 : 0);
+toastSaved('全部梦角多字卡回复总闸', pmElB.checked);
+try { if (typeof syncUI === 'function') syncUI(); } catch (e) {}
+try { if (window.qsDiagRender) window.qsDiagRender(); } catch (e) {}
+});
+}
+} catch (e) {}
 (function () {
 const POOL = [['py-punct-space', '空格'], ['py-punct-dou', '，'], ['py-punct-per', '。'], ['py-punct-ex', '！'], ['py-punct-q', '？'], ['py-punct-el', '......'], ['py-punct-dash', '——'], ['py-punct-nl', '换行']];
 const BUILTIN_VALS = [' ', '，', '。', '！', '？', '......', '——', '\n'];
