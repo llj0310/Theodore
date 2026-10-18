@@ -1114,8 +1114,9 @@ const d = (st && window.getDefaultCardsFor) ? window.getDefaultCardsFor(st) : ((
 if (d && d.type === 'poke') action = d.text;
 } catch (e) {}
 if (!action) {
-const poke = (window.getPokeCardsFor && window.getPokeCardsFor(cid)) || [];
-action = poke.length ? pick(poke) : '拍了拍我';
+// 群聊成员拍你：只用系统内置拍一拍预设文案，绝不用"我在这里设置的内容"（我的拍一拍分组 / 字卡库拍一拍）
+const presets = ['拍了拍我', '戳了戳我的脸蛋', '弹了一下我的额头', '揉了揉我的头发', '捏了捏我的脸颊', '拍了拍我的肩膀'];
+action = presets[Math.floor(Math.random() * presets.length)];
 }
 let text;
 if (action.indexOf('你') >= 0) {

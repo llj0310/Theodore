@@ -4883,7 +4883,8 @@ const d = (window.getDefaultCards && window.getDefaultCards()) || null;
 if (d && d.type === 'poke') action = d.text;
 }
 if (!action) {
-const cards = pokeAllCards();
+// 梦角拍你：只用系统内置"TA 拍我"预设文案，绝不用"我在这里设置的内容"（我的拍一拍分组 / 字卡库拍一拍）
+const cards = POKE_PRESETS.ta || [];
 action = cards.length ? pick(cards) : '拍了拍你';
 }
 let text;
