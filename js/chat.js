@@ -4883,8 +4883,12 @@ const d = (window.getDefaultCards && window.getDefaultCards()) || null;
 if (d && d.type === 'poke') action = d.text;
 }
 if (!action) {
-// 梦角拍你：只用系统内置"TA 拍我"预设文案，绝不用"我在这里设置的内容"（我的拍一拍分组 / 字卡库拍一拍）
-const cards = POKE_PRESETS.ta || [];
+// 梦角拍你：用系统内置"TA 拍我"预设 + 你专门给 TA 定制的拍一拍（拍一拍面板 → TA 的拍一拍 分组），
+// 但绝不用"我的拍一拍"（mine 分组）与字卡库拍一拍分类里设置的内容——那些只归你自己用
+const cards = (POKE_PRESETS.ta || []).slice();
+try { (pokeUserGroups.ta || []).forEach(g => {
+if (Array.isArray(g) && Array.isArray(g[1])) g[1].forEach(x => { if (pokeTextOnly(x)) cards.push(x); });
+}); } catch (e) {}
 action = cards.length ? pick(cards) : '拍了拍你';
 }
 let text;
