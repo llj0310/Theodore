@@ -104,6 +104,8 @@ try { return (window.xyStore('xy-home-v2') || {}).get && window.xyStore('xy-home
 }
 function customDictWords() {
 // 自定义词典全部词条（专属 + 公用合并去重）：梦角把词典当"特定功能"，all/func 分组都读
+// 按字卡库"词典"分组概率过滤与加权：概率 0 = 该组词典词条完全不被梦角拼句/造句使用；
+// 概率越高词条在池里份数越多（与字卡加权一致：100→10份，50→5份，10→1份），抽中权重越大
 try {
 const out = [];
 const seen = {};
@@ -113,13 +115,17 @@ const g = JSON.parse(raw || 'null');
 if (!g || !Array.isArray(g['dict'])) return;
 (g['dict'] || []).forEach((grp) => {
 if (!grp || !Array.isArray(grp[1])) return;
+const gname = grp[0];
+const p = (window.ccGroupProb ? window.ccGroupProb('dict', gname) : 100);
+if (p <= 0) return; // 分组概率 0：这组词典词条完全不进池
+const copies = p >= 100 ? 10 : Math.max(1, Math.round(p / 10));
 (grp[1] || []).forEach(c => {
 if (typeof c !== 'string' || !c.trim()) return;
 if (c.indexOf('data:') === 0 || c.indexOf('|||') >= 0) return;
 const v = c.trim();
-if (seen[v]) return;
+if (seen[v]) return; // 同一词条只去重一次
 seen[v] = 1;
-out.push(v);
+for (let k = 0; k < copies; k++) out.push(v); // 加权：高概率分组词条在池里份数更多
 });
 });
 } catch (e) {}
