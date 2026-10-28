@@ -82,24 +82,8 @@
   }
 
   function showSearch(nickname) {
-    // 默认直接显示大唱片界面
-    showPlayer("🎵 未播放", "搜索歌曲开始一起听");
-    // 顶部加搜索/设置按钮
-    const top = document.createElement("div");
-    top.style.cssText = "display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;";
-    top.innerHTML = `
-      <span style="font-size:12px;opacity:.6;">已登录：${nickname || "网易云用户"}</span>
-      <span style="display:flex;gap:14px;">
-        <span id="netease-search" style="font-size:16px;cursor:pointer;">🔍</span>
-        <span id="netease-set" style="font-size:14px;cursor:pointer;opacity:.6;">⚙️</span>
-        <span id="netease-logout" style="font-size:12px;cursor:pointer;color:${accent};">退出</span>
-      </span>`;
-    const el = root();
-    el.insertBefore(top, el.firstChild);
-
-    el.querySelector("#netease-logout").onclick = async () => { await api("logout"); loadState(); };
-    el.querySelector("#netease-set").onclick = () => showSettings();
-    el.querySelector("#netease-search").onclick = () => showSearchPanel(nickname);
+    // 直接显示深色黑胶播放界面
+    showPlayer("🎵 未播放", nickname ? "已登录：" + nickname : "点搜索找歌");
   }
 
   function showSearchPanel(nickname) {
@@ -147,46 +131,77 @@
 
   function showPlayer(name, artist) {
     const el = root();
-    const coverHtml = discImg
-      ? `<img src="${discImg}" style="width:130px;height:130px;border-radius:50%;object-fit:cover;">`
-      : `<div style="width:130px;height:130px;border-radius:50%;background:linear-gradient(135deg,#555,#222);display:flex;align-items:center;justify-content:center;font-size:36px;color:#fff;">🎵</div>`;
     el.innerHTML = `
-      <div style="display:flex;flex-direction:column;align-items:center;padding:6px 0;">
-        <div id="netease-timer" style="font-size:11px;opacity:.5;margin-bottom:10px;">已一起听 0:00</div>
-        <div id="netease-disc" title="点击换封面" style="width:160px;height:160px;border-radius:50%;background:#222;display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 0 24px ${accent}33;animation:spin 8s linear infinite;cursor:pointer;">
-          <div style="width:130px;height:130px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;">${coverHtml}</div>
-          <div style="position:absolute;top:50%;left:50%;width:10px;height:10px;background:${accent};border-radius:50%;transform:translate(-50%,-50%);z-index:2;"></div>
+      <div style="background:#0c0c0e;border-radius:16px;padding:20px 16px 16px;overflow:hidden;position:relative;">
+        <!-- 顶部 -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+          <span id="netease-timer" style="font-size:10px;color:rgba(255,255,255,.4);">已一起听 0:00</span>
+          <span style="display:flex;gap:12px;">
+            <span id="netease-search" style="font-size:14px;cursor:pointer;color:rgba(255,255,255,.5);">🔍</span>
+            <span id="netease-set" style="font-size:13px;cursor:pointer;color:rgba(255,255,255,.5);">⚙️</span>
+            <span id="netease-logout" style="font-size:11px;cursor:pointer;color:${accent};">退出</span>
+          </span>
         </div>
-        <div style="margin-top:16px;font-size:15px;font-weight:600;">${name}</div>
-        <div style="font-size:12px;opacity:.6;margin-top:3px;">${artist}</div>
-        <div style="font-size:10px;opacity:.35;margin-top:3px;">👆 点唱片换封面</div>
-        <div style="width:100%;margin-top:16px;">
-          <input type="range" id="netease-seek" min="0" max="100" value="0" style="width:100%;accent-color:${accent};"/>
-          <div style="display:flex;justify-content:space-between;font-size:11px;opacity:.5;margin-top:2px;">
-            <span id="netease-cur">0:00</span><span id="netease-dur">0:00</span>
+        <!-- 黑胶唱片 -->
+        <div style="display:flex;justify-content:center;">
+          <div id="netease-disc" title="点击换封面" style="width:200px;height:200px;border-radius:50%;position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer;animation:discspin 18s linear infinite;animation-play-state:${audio.paused?'paused':'running'};box-shadow:0 16px 50px rgba(0,0,0,.45),inset 0 0 0 2px #000;background:#0c0c0e;background-image:radial-gradient(circle at 32% 28%,rgba(255,255,255,.10),rgba(255,255,255,0) 42%),repeating-radial-gradient(circle at 50% 50%,rgba(255,255,255,.05) 0 1px,transparent 1px 4px);">
+            <div style="position:absolute;inset:-3px;border-radius:50%;border:4px solid rgba(220,220,220,.06);pointer-events:none;"></div>
+            <div id="netease-cover" style="width:78%;height:78%;border-radius:50%;overflow:hidden;position:relative;box-shadow:0 0 0 4px rgba(0,0,0,.55),0 0 0 5px rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;background:#222;">
+              ${discImg ? `<img src="${discImg}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>` : `<svg viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1" style="width:40px;height:40px;"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`}
+            </div>
           </div>
         </div>
-        <div style="display:flex;align-items:center;gap:26px;margin-top:16px;">
-          <span style="font-size:20px;opacity:.4;cursor:pointer;" id="netease-prev">⏮</span>
-          <span id="netease-pp" style="width:52px;height:52px;border-radius:50%;background:${accent};color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;box-shadow:0 4px 12px ${accent}66;">⏸</span>
-          <span style="font-size:20px;opacity:.4;cursor:pointer;" id="netease-next">⏭</span>
+        <!-- 歌名 -->
+        <div style="text-align:center;margin-top:18px;">
+          <div style="font-size:15px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${name}</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.5);margin-top:3px;">${artist}</div>
         </div>
-        <div style="margin-top:18px;font-size:12px;opacity:.6;cursor:pointer;" id="netease-back">🔍 搜索歌曲</div>
-      </div>
-      <input type="file" id="netease-file" accept="image/*" style="display:none;"/>
-      <style>@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}</style>`;
+        <!-- 进度条 -->
+        <div style="margin-top:16px;">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,.4);margin-bottom:4px;">
+            <span id="netease-cur">0:00</span><span id="netease-dur">0:00</span>
+          </div>
+          <input type="range" id="netease-seek" min="0" max="100" value="0" style="width:100%;height:3px;-webkit-appearance:none;appearance:none;background:rgba(255,255,255,.15);border-radius:2px;outline:0;accent-color:${accent};"/>
+        </div>
+        <!-- 控制按钮 -->
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px 0;">
+          <button id="netease-mode" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:16px;cursor:pointer;width:40px;height:40px;display:flex;align-items:center;justify-content:center;">🔁</button>
+          <button id="netease-prev" style="background:none;border:none;color:rgba(255,255,255,.9);cursor:pointer;width:44px;height:44px;display:flex;align-items:center;justify-content:center;">
+            <svg viewBox="0 0 24 24" fill="rgba(255,255,255,.9)" width="26" height="26"><path d="M18 18L9 12l9-6v12zM6 5h2v14H6z"/></svg>
+          </button>
+          <button id="netease-pp" style="width:52px;height:52px;background:none;border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+            <svg id="netease-pp-ico" viewBox="0 0 24 24" fill="#fff" width="30" height="30"><path d="M8 5.5v13l11-6.5z"/></svg>
+          </button>
+          <button id="netease-next" style="background:none;border:none;color:rgba(255,255,255,.9);cursor:pointer;width:44px;height:44px;display:flex;align-items:center;justify-content:center;">
+            <svg viewBox="0 0 24 24" fill="rgba(255,255,255,.9)" width="26" height="26"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+          </button>
+          <button id="netease-search2" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:16px;cursor:pointer;width:40px;height:40px;display:flex;align-items:center;justify-content:center;">📋</button>
+        </div>
+        <input type="file" id="netease-file" accept="image/*" style="display:none;"/>
+        <style>@keyframes discspin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+        #netease-seek::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;border-radius:50%;background:${accent};cursor:pointer;}
+        #netease-seek::-moz-range-thumb{width:11px;height:11px;border-radius:50%;background:${accent};cursor:pointer;border:none;}
+        </style>
+      </div>`;
 
     el.querySelector("#netease-disc").onclick = () => el.querySelector("#netease-file").click();
     el.querySelector("#netease-file").onchange = (e) => {
       const f = e.target.files[0]; if (!f) return;
       const r2 = new FileReader();
-      r2.onload = () => { discImg = r2.result; localStorage.setItem("td_music_disc", discImg); showPlayer(currentSong.name, currentSong.artist); };
+      r2.onload = () => { discImg = r2.result; localStorage.setItem("td_music_disc", discImg); if (currentSong) showPlayer(currentSong.name, currentSong.artist); };
       r2.readAsDataURL(f);
     };
 
     const pp = el.querySelector("#netease-pp");
-    pp.onclick = () => { audio.paused ? (audio.play(), pp.textContent = "⏸") : (audio.pause(), pp.textContent = "▶"); };
-    el.querySelector("#netease-back").onclick = () => showSearchPanel("");
+    const ppIco = el.querySelector("#netease-pp-ico");
+    pp.onclick = () => {
+      if (audio.paused) { audio.play(); ppIco.innerHTML = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>'; el.querySelector("#netease-disc").style.animationPlayState = "running"; }
+      else { audio.pause(); ppIco.innerHTML = '<path d="M8 5.5v13l11-6.5z"/>'; el.querySelector("#netease-disc").style.animationPlayState = "paused"; }
+    };
+    el.querySelector("#netease-search").onclick = () => showSearchPanel("");
+    el.querySelector("#netease-search2").onclick = () => showSearchPanel("");
+    el.querySelector("#netease-set").onclick = () => showSettings();
+    el.querySelector("#netease-logout").onclick = async () => { await api("logout"); loadState(); };
 
     audio.ontimeupdate = () => {
       const sk = document.getElementById("netease-seek");
@@ -194,8 +209,8 @@
       const c = document.getElementById("netease-cur"); if (c) c.textContent = fmt(audio.currentTime);
     };
     audio.ondurationchange = () => { const d = document.getElementById("netease-dur"); if (d) d.textContent = fmt(audio.duration); };
-    audio.onpause = () => { const p = document.getElementById("netease-pp"); if (p) p.textContent = "▶"; const dc = document.getElementById("netease-disc"); if (dc) dc.style.animationPlayState = "paused"; };
-    audio.onplay = () => { const p = document.getElementById("netease-pp"); if (p) p.textContent = "⏸"; const dc = document.getElementById("netease-disc"); if (dc) dc.style.animationPlayState = "running"; };
+    audio.onpause = () => { const p = document.getElementById("netease-pp-ico"); if (p) p.innerHTML = '<path d="M8 5.5v13l11-6.5z"/>'; const dc = document.getElementById("netease-disc"); if (dc) dc.style.animationPlayState = "paused"; };
+    audio.onplay = () => { const p = document.getElementById("netease-pp-ico"); if (p) p.innerHTML = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>'; const dc = document.getElementById("netease-disc"); if (dc) dc.style.animationPlayState = "running"; };
 
     const sk = el.querySelector("#netease-seek");
     sk.addEventListener("input", () => { if (audio.duration) audio.currentTime = sk.value / 100 * audio.duration; });
