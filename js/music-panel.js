@@ -82,19 +82,36 @@
   }
 
   function showSearch(nickname) {
+    // 默认直接显示大唱片界面
+    showPlayer("🎵 未播放", "搜索歌曲开始一起听");
+    // 顶部加搜索/设置按钮
+    const top = document.createElement("div");
+    top.style.cssText = "display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;";
+    top.innerHTML = `
+      <span style="font-size:12px;opacity:.6;">已登录：${nickname || "网易云用户"}</span>
+      <span style="display:flex;gap:14px;">
+        <span id="netease-search" style="font-size:16px;cursor:pointer;">🔍</span>
+        <span id="netease-set" style="font-size:14px;cursor:pointer;opacity:.6;">⚙️</span>
+        <span id="netease-logout" style="font-size:12px;cursor:pointer;color:${accent};">退出</span>
+      </span>`;
+    const el = root();
+    el.insertBefore(top, el.firstChild);
+
+    el.querySelector("#netease-logout").onclick = async () => { await api("logout"); loadState(); };
+    el.querySelector("#netease-set").onclick = () => showSettings();
+    el.querySelector("#netease-search").onclick = () => showSearchPanel(nickname);
+  }
+
+  function showSearchPanel(nickname) {
     const el = root();
     el.innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-        <span style="font-size:12px;opacity:.6;">已登录：${nickname || "网易云用户"}</span>
-        <span style="display:flex;gap:10px;">
-          <span id="netease-set" style="font-size:12px;cursor:pointer;opacity:.6;">⚙️ 设置</span>
-          <span id="netease-logout" style="font-size:12px;cursor:pointer;color:${accent};">退出</span>
-        </span>
+        <span style="font-size:13px;font-weight:600;">🔍 搜索歌曲</span>
+        <span id="netease-back-disc" style="font-size:12px;cursor:pointer;opacity:.6;">← 返回</span>
       </div>
-      <input id="netease-kw" placeholder="🔍 搜索歌曲..." style="width:100%;box-sizing:border-box;padding:10px 12px;background:rgba(0,0,0,.05);border:1px solid rgba(0,0,0,.1);border-radius:10px;color:inherit;font-size:14px;outline:none;"/>
+      <input id="netease-kw" placeholder="搜歌名/歌手..." style="width:100%;box-sizing:border-box;padding:10px 12px;background:rgba(0,0,0,.05);border:1px solid rgba(0,0,0,.1);border-radius:10px;color:inherit;font-size:14px;outline:none;"/>
       <div id="netease-results" style="margin-top:10px;"></div>`;
-    el.querySelector("#netease-logout").onclick = async () => { await api("logout"); loadState(); };
-    el.querySelector("#netease-set").onclick = () => showSettings();
+    el.querySelector("#netease-back-disc").onclick = () => showSearch(nickname);
     el.querySelector("#netease-kw").addEventListener("keydown", async e => {
       if (e.key !== "Enter") return;
       const kw = e.target.value.trim();
@@ -114,6 +131,7 @@
         </div>`).join("");
       rs.querySelectorAll(".nsong").forEach(s => s.onclick = () => play(s.dataset.id, s.dataset.name, s.dataset.artist));
     });
+    setTimeout(() => el.querySelector("#netease-kw").focus(), 100);
   }
 
   let currentSong = null;
@@ -153,7 +171,7 @@
           <span id="netease-pp" style="width:52px;height:52px;border-radius:50%;background:${accent};color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;box-shadow:0 4px 12px ${accent}66;">⏸</span>
           <span style="font-size:20px;opacity:.4;cursor:pointer;" id="netease-next">⏭</span>
         </div>
-        <div style="margin-top:18px;font-size:12px;opacity:.6;cursor:pointer;" id="netease-back">🔍 返回搜索</div>
+        <div style="margin-top:18px;font-size:12px;opacity:.6;cursor:pointer;" id="netease-back">🔍 搜索歌曲</div>
       </div>
       <input type="file" id="netease-file" accept="image/*" style="display:none;"/>
       <style>@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}</style>`;
@@ -168,7 +186,7 @@
 
     const pp = el.querySelector("#netease-pp");
     pp.onclick = () => { audio.paused ? (audio.play(), pp.textContent = "⏸") : (audio.pause(), pp.textContent = "▶"); };
-    el.querySelector("#netease-back").onclick = () => showSearch("");
+    el.querySelector("#netease-back").onclick = () => showSearchPanel("");
 
     audio.ontimeupdate = () => {
       const sk = document.getElementById("netease-seek");
