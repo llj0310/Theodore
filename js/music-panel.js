@@ -242,4 +242,54 @@
   // 等待页面加载后初始化
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
+
+  // === 大唱片同步（联动 Theodore 现有播放器）===
+  function syncBigDisc() {
+    const audio = document.getElementById("m-audio");
+    if (!audio) return;
+    const songEl = document.getElementById("big-disc-song");
+    const artEl = document.getElementById("big-disc-artist");
+    const fillEl = document.getElementById("big-disc-fill");
+    const curEl = document.getElementById("big-disc-cur");
+    const durEl = document.getElementById("big-disc-dur");
+    const discEl = document.getElementById("big-disc");
+    const playIco = document.getElementById("big-disc-play-ico");
+    const mwSong = document.getElementById("mw-song");
+    const mwArtist = document.getElementById("mw-artist");
+    const mwCover = document.getElementById("mw-cover");
+    const bigCover = document.getElementById("big-disc-cover");
+
+    if (songEl) songEl.textContent = (mwSong && mwSong.textContent) || "未在播放";
+    if (artEl) artEl.textContent = (mwArtist && mwArtist.textContent) || "";
+    if (fillEl && audio.duration) fillEl.style.width = (audio.currentTime / audio.duration * 100) + "%";
+    if (curEl) curEl.textContent = fmt(audio.currentTime);
+    if (durEl) durEl.textContent = fmt(audio.duration);
+    if (discEl) discEl.classList.toggle("playing", !audio.paused);
+    if (playIco) playIco.innerHTML = audio.paused
+      ? '<path d="M8 5.5v13l11-6.5z"/>'
+      : '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>';
+    // 同步封面
+    if (bigCover && mwCover) {
+      const img = mwCover.querySelector("img");
+      if (img && img.src) {
+        bigCover.innerHTML = '<img src="' + img.src + '"/>';
+      }
+    }
+  }
+  setInterval(syncBigDisc, 800);
+  setTimeout(() => {
+    const pp = document.getElementById("big-disc-play");
+    if (pp) pp.onclick = () => document.getElementById("mw-play")?.click();
+    const pv = document.getElementById("big-disc-prev");
+    if (pv) pv.onclick = () => document.getElementById("mw-prev")?.click();
+    const nx = document.getElementById("big-disc-next");
+    if (nx) nx.onclick = () => document.getElementById("mw-next")?.click();
+    const bar = document.querySelector(".big-disc-bar");
+    if (bar) bar.onclick = (e) => {
+      const audio = document.getElementById("m-audio");
+      if (!audio || !audio.duration) return;
+      const rect = bar.getBoundingClientRect();
+      audio.currentTime = (e.clientX - rect.left) / rect.width * audio.duration;
+    };
+  }, 500);
 })();
