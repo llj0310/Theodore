@@ -155,6 +155,7 @@
         <div style="text-align:center;margin-top:18px;">
           <div style="font-size:15px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${name}</div>
           <div style="font-size:12px;color:rgba(255,255,255,.5);margin-top:3px;">${artist}</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.25);margin-top:4px;">👆 点唱片换封面</div>
         </div>
         <!-- 进度条 -->
         <div style="margin-top:16px;">
@@ -221,19 +222,20 @@
     const colors = ["#1ec96b","#ff6b9d","#6c5ce7","#fdcb6e","#00cec9","#ff7675","#74b9ff","#a29bfe"];
     const el = root();
     el.innerHTML = `
-      <div style="padding:6px 0;">
-        <div style="font-size:14px;font-weight:600;margin-bottom:14px;">⚙️ 音乐设置</div>
-        <div style="font-size:12px;opacity:.6;margin-bottom:8px;">按钮颜色</div>
-        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px;">
-          ${colors.map(c => `<div class="ncolor" data-c="${c}" style="width:34px;height:34px;border-radius:50%;background:${c};cursor:pointer;border:${c===accent?'3px solid #333':'3px solid transparent'};"></div>`).join("")}
+      <div style="background:#0c0c0e;border-radius:16px;padding:20px 16px;color:#fff;">
+        <div style="font-size:15px;font-weight:600;margin-bottom:18px;">⚙️ 音乐设置</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:10px;">按钮颜色</div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:24px;">
+          ${colors.map(c => `<div class="ncolor" data-c="${c}" style="width:36px;height:36px;border-radius:50%;background:${c};cursor:pointer;border:${c===accent?'3px solid #fff':'3px solid transparent'};"></div>`).join("")}
         </div>
-        <div style="font-size:12px;opacity:.6;margin-bottom:8px;">唱片封面</div>
-        <button id="netease-up" style="width:100%;padding:10px;background:rgba(0,0,0,.05);border:1px solid rgba(0,0,0,.1);border-radius:10px;color:inherit;font-size:13px;cursor:pointer;">📷 上传自定义封面</button>
-        ${discImg ? '<button id="netease-delcov" style="width:100%;padding:8px;margin-top:6px;background:none;border:none;color:#ff6b9d;font-size:12px;cursor:pointer;">🗑 恢复默认封面</button>' : ''}
-        <div style="margin-top:20px;font-size:12px;opacity:.6;cursor:pointer;text-align:center;" id="netease-setback">← 返回</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:10px;">唱片封面</div>
+        ${discImg ? `<div style="width:80px;height:80px;border-radius:50%;overflow:hidden;margin-bottom:10px;border:3px solid rgba(255,255,255,.2);"><img src="${discImg}" style="width:100%;height:100%;object-fit:cover;"/></div>` : ''}
+        <button id="netease-up" style="width:100%;padding:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:10px;color:#fff;font-size:13px;cursor:pointer;">📷 上传自定义封面</button>
+        ${discImg ? '<button id="netease-delcov" style="width:100%;padding:10px;margin-top:8px;background:none;border:none;color:#ff6b9d;font-size:12px;cursor:pointer;">🗑 恢复默认封面</button>' : ''}
+        <div style="margin-top:24px;font-size:12px;color:rgba(255,255,255,.5);cursor:pointer;text-align:center;" id="netease-setback">← 返回播放</div>
         <input type="file" id="netease-setfile" accept="image/*" style="display:none;"/>
       </div>`;
-    el.querySelector("#netease-setback").onclick = () => loadState();
+    el.querySelector("#netease-setback").onclick = () => showSearch("");
     el.querySelectorAll(".ncolor").forEach(c => c.onclick = () => {
       accent = c.dataset.c; localStorage.setItem("td_music_color", accent); showSettings();
     });
