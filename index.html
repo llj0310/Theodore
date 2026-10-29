@@ -15292,16 +15292,16 @@ html[data-splash-skip] #splash { display: none !important; }
         </div>
       </div>
       <div class="fav-tabs">
-        <button class="fav-tab sel" data-mtab="lib">我的音乐库</button>
+        <button class="fav-tab sel" data-mtab="netease">🎵 网易云一起听</button>
+        <button class="fav-tab" data-mtab="lib">我的音乐库</button>
         <button class="fav-tab" data-mtab="pl">歌单</button>
         <button class="fav-tab" data-mtab="fav">我的收藏</button>
         <!-- v3.14.x：联系人的收藏——标题由 music-player.js syncTaFavTab() 按联系人昵称填充 -->
         <button class="fav-tab" data-mtab="favta">TA的收藏</button>
         <button class="fav-tab" data-mtab="his">梦角邀请听歌记录</button>
-        <button class="fav-tab" data-mtab="netease">🎵 网易云一起听</button>
       </div>
       <div class="cal-scroll sm-scroll">
-        <div class="cal-card glass" data-mpanel="lib">
+        <div class="cal-card glass" data-mpanel="lib" hidden>
           <div class="sm-tools">
             <button class="sm-tool" id="music-upload">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>上传音乐
@@ -15338,7 +15338,7 @@ html[data-splash-skip] #splash { display: none !important; }
         <div class="cal-card glass" data-mpanel="his" hidden>
           <div id="music-his-list"></div>
         </div>
-        <div class="cal-card glass" data-mpanel="netease" hidden>
+        <div class="cal-card glass" data-mpanel="netease">
           <div id="netease-body" style="padding:4px 2px;"></div>
         </div>
       </div>
