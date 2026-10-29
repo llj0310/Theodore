@@ -65,7 +65,7 @@
     const r = await api("qrkey");
     if (!r.key) return;
     const box = root().querySelector("div[style*='width:170px']");
-    box.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=170x170&data=${encodeURIComponent("https://music.163.com/login?codekey=" + r.key)}" style="width:170px;height:170px;">`;
+    box.innerHTML = `<img src="https://quickchart.io/qr?text=${encodeURIComponent("https://music.163.com/login?codekey=" + r.key)}&size=200&margin=0" style="width:170px;height:170px;" onerror="this.parentNode.innerHTML='<span style=&quot;color:#f66;font-size:12px;&quot;>二维码加载失败，点我重试</span>';this.parentNode.onclick=()=>genQr();">`;
     pollQr(r.key);
   }
 
